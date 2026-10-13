@@ -1,0 +1,6 @@
+seed,api_calls,audit_rows,coverage,harness_level_ops,audited_harness_rows,chain_valid,update_blocked,tamper_detected,deny_events
+0,1736,1736,1.0,202,1732,1,1,1,6
+1,1714,1714,1.0,202,1710,1,1,1,6
+2,1700,1700,1.0,202,1696,1,1,1,6
+3,1771,1771,1.0,202,1767,1,1,1,6
+4,1738,1738,1.0,202,1734,1,1,1,6

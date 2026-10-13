@@ -1,0 +1,6 @@
+{
+ "llm_backend": "mock",
+ "seeds": 5,
+ "tenants": 2,
+ "users": 8
+}

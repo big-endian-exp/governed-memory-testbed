@@ -1,0 +1,11 @@
+seed,backend,fact_reads,stale_fact_reads,stale_fact_rate,search_checks,stale_or_conflicting_search,stale_search_rate,ttl_checks,expired_still_visible,expired_visible_rate
+0,governed,24,0,0.0,8,0,0.0,8,0,0.0
+0,naive,24,24,1.0,8,8,1.0,8,8,1.0
+1,governed,24,0,0.0,8,0,0.0,8,0,0.0
+1,naive,24,24,1.0,8,8,1.0,8,8,1.0
+2,governed,24,0,0.0,8,0,0.0,8,0,0.0
+2,naive,24,24,1.0,8,8,1.0,8,8,1.0
+3,governed,24,0,0.0,8,0,0.0,8,0,0.0
+3,naive,24,24,1.0,8,8,1.0,8,8,1.0
+4,governed,24,0,0.0,8,0,0.0,8,0,0.0
+4,naive,24,24,1.0,8,8,1.0,8,8,1.0
