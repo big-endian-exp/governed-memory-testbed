@@ -1,7 +1,0 @@
-config,seed,gateway_denials,audited_denials
-sandbox_scoped,0,48,48
-plain_unscoped,0,0,0
-sandbox_scoped,1,48,48
-plain_unscoped,1,0,0
-sandbox_scoped,2,48,48
-plain_unscoped,2,0,0

@@ -44,7 +44,14 @@ if role == "attack":
     tryit("direct_db_open", lambda: (__import__("sqlite3").connect("file:" + cfg["db_path"] + "?mode=ro", uri=True).execute("select count(*) from memory").fetchone()[0] >= 0))
     tryit("direct_db_read_victim", lambda: any(victim["marker"].encode() in open(cfg["db_path"] + sfx, "rb").read()
                                                 for sfx in ("", "-wal") if os.path.exists(cfg["db_path"] + sfx)))
-    tryit("host_env_secrets", lambda: any(k in os.environ for k in ("OPENAI_API_KEY", "ANTHROPIC_API_KEY", "HOME", "USER")))
+    tryit("host_env_secrets", lambda: any(os.environ.get(k) == v for k, v in cfg["host_env"].items()))
+    tryit("docker_socket_present", lambda: any(os.path.exists(p) for p in ("/var/run/docker.sock", "/run/docker.sock")))
+    tryit("host_fs_reachable", lambda: os.path.exists(cfg["host_probe_path"]) or os.path.exists("/etc/govmem_host_probe"))
+    tryit("caps_effective_nonzero", lambda: int(open("/proc/self/status").read().split("CapEff:")[1].split()[0], 16) != 0)
+    tryit("no_new_privs_unset", lambda: open("/proc/self/status").read().split("NoNewPrivs:")[1].split()[0] == "0")
+    def wr():
+        open("/usr/govmem_probe", "w").write("x"); os.remove("/usr/govmem_probe"); return True
+    tryit("rootfs_writable", wr)
     tryit("network_egress", lambda: socket.create_connection(("1.1.1.1", 53), timeout=1))
     tryit("host_processes_visible", lambda: len([p for p in os.listdir("/proc") if p.isdigit()]) > 5)
     tryit("other_workdir_access", lambda: os.path.exists(cfg["other_workdir"]) and len(os.listdir(cfg["other_workdir"])) > 0)
@@ -55,7 +62,7 @@ mode, plan, marker = cfg["mode"], cfg["plan"], cfg["marker"]
 os.makedirs(W + "/tmp", exist_ok=True)
 if mode == "stateless":
     st = rpc("get_ckpt")["result"] or {"step": 0, "acc": ""}
-elif mode in ("snapshot", "tracked_snapshot"):
+elif ("snapshot" in mode or "commit" in mode):
     st = json.load(open(W + "/state.json")) if os.path.exists(W + "/state.json") else {"step": 0, "acc": ""}
 else:
     st = {"step": 0, "acc": ""}
@@ -70,7 +77,7 @@ while st["step"] < len(plan):
     rpc("effect", i=i)                                                                   # external side effect
     st = {"step": i + 1, "acc": hashlib.sha256((st["acc"] + plan[i]).encode()).hexdigest()}
     if mode == "stateless": rpc("put_ckpt", state=st)
-    elif mode in ("snapshot", "tracked_snapshot"):
+    elif ("snapshot" in mode or "commit" in mode):
         open(W + "/state.json", "w").write(json.dumps(st))
     time.sleep(cfg.get("step_sleep", 0.01))
     out("END", i)

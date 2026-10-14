@@ -106,7 +106,7 @@ class GovernedMemory:
         """Track an out-of-DB artifact (snapshot tarball, sandbox log) as a derived record: it inherits
         TTL and is removed (file unlinked) by cascading delete."""
         import os
-        h = hashlib.sha256(open(path, "rb").read()).hexdigest()
+        h = hashlib.sha256(path.encode() if path.startswith("docker-image:") else open(path, "rb").read()).hexdigest()
         rid = self.write(harness, tenant, user, "working", f"artifact:{kind} sha256={h}", ttl=ttl,
                          sensitivity="restricted", src_ref=os.path.basename(path), derived_from=derived_from)
         self.db.execute("INSERT INTO artifact VALUES(?,?)", (rid, path))
@@ -184,7 +184,10 @@ class GovernedMemory:
         self.db.execute("COMMIT")
         for i in allids: self._index.pop(i, None)
         for p in paths:
-            if os.path.exists(p): os.remove(p)
+            if p.startswith("docker-image:"):   # committed sandbox snapshot image
+                import subprocess, shlex
+                subprocess.run(shlex.split(os.environ.get("GOVMEM_DOCKER", "docker")) + ["rmi", "-f", p[13:]], capture_output=True)
+            elif os.path.exists(p): os.remove(p)
         return len(allids)
 
 

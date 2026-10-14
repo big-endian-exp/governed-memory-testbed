@@ -1,4 +1,0 @@
-policy,tasks,leak_rate,cross_tenant_rate
-fresh,72,0.0,0.0
-pooled,72,0.9166666666666666,0.8333333333333334
-pooled_scrubbed,72,0.0,0.0
