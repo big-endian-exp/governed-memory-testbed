@@ -50,9 +50,9 @@ Workload: 2 tenants × 4 users = 8 users. Per user: 5 docs with mixed sensitivit
 | stale fact reads / stale search / expired still visible | 0 / 0 / 0 | 1.0 / 1.0 / 1.0 |
 | audit coverage (rows/API calls), tamper detected | 1.00 (8,659 calls), yes | none |
 | disallowed writes denied | 30/30 | 0 |
-| write p50 @10k | 0.46 ms | 1.07 ms |
-| search p50 @10k | 8.4 ms | 34.4 ms |
-| forget_user @10k | 121 ms | 12 ms |
+| write p50 @10k | 0.53 ms | 1.22 ms |
+| search p50 @10k | 7.9 ms | 36.4 ms |
+| forget_user @10k | 149 ms | 25 ms |
 | storage per record | 17.5 KB (+2.2%) | 17.1 KB |
 
 Charts: `results/fig_governance_rates.png`, `fig_deletion_residue.png`, `fig_visibility.png`, `fig_crash_resume.png`, `fig_latency.png`.
@@ -62,43 +62,59 @@ The evaluation section draft is in `results/evaluation_draft.md`.
 The mock LLM and synthetic data are described in the evaluation draft's limitations. The naive write path is slower only because it autocommits twice per record while the governed path uses one transaction. Treat the write-latency comparison as "no measurable governance penalty", not as a speedup.
 
 ## Sandbox experiment: governance across the sandbox boundary
-**Runtime.** This host has no Docker or podman, so each task runs in a short-lived **bubblewrap** sandbox (`govmem/sandbox.py`) with:
-- no network (`--unshare-all`) and its own PID, IPC, UTS and user namespaces
-- a cleared environment and read-only `/usr`
-- a per-task `/work` directory and the gateway socket directory as its only writable mounts
-- no access to the DB file
+**Backends (pluggable).** Select one with `--backend bwrap|docker` or `GOVMEM_SANDBOX=bwrap|docker`. Override the Docker CLI with `GOVMEM_DOCKER` (for example `"sudo docker"`).
+- **bwrap:** bubblewrap with no network, private namespaces, a cleared env, read-only `/usr`, and a per-task `/work`.
+- **docker** (`govmem/sandbox.py: DockerRun`), image `govmem-sbx` built from `python:3.13-slim`:
+  - `--network none --read-only --cap-drop ALL --security-opt no-new-privileges --cpus 1 --memory 256m --pids-limit 128`, running as the host UID
+  - a tmpfs `/work` (or a bind-mounted `/work` for tarball snapshots)
+  - the gateway socket directory as the only host mount; there is no DB mount and no Docker socket
+  - agent code and the task are streamed in over stdin as a tar
+  - pooling uses long-lived hardened containers plus `docker exec` (warm start)
 
-The in-sandbox agent (`govmem/sandbox_agent.py`, stdlib only) reaches memory only through the **gateway** (`govmem/gateway.py`). The gateway is JSON-lines RPC over a Unix socket. Each call carries an HMAC token scoped to (tenant, user, task, operations, expiry). Identity comes only from the verified token, never from request fields. Every denial is written to the hash-chained audit log, and the gateway records an external side-effect ledger per task.
+In both backends, the sandbox reaches memory only through the gateway (`govmem/gateway.py`): JSON-lines over a Unix socket, with an HMAC token scoped to tenant, user, task, operations and expiry. Every denial is audited.
 
-**Persistence modes compared:**
-- `none`: no persistence (reference).
-- `stateless` (a): an ephemeral sandbox plus governed checkpoints written through the gateway.
-- `snapshot` (b): the naive approach. The sandbox filesystem is tarballed after each run and restored on resume, and nothing tracks it.
-- `tracked_snapshot` (c): the same tarballs plus host logs, registered with `register_artifact()` as derived records. They inherit TTL and are unlinked by the `forget_user` cascade. Mode (a) registers its host logs the same way.
+**Persistence modes:**
+- `none`
+- (a) `stateless` + governed checkpoints
+- (b) naive tarball of `/work`
+- (c) the same tarball, tracked (lineage + TTL + cascade delete)
+- Docker only:
+  - (b') naive `docker commit`
+  - (c') tracked `docker commit`, where the image ref is registered as an artifact and `forget_user`/TTL purge run `docker rmi`. Commit snapshots need a **writable** rootfs, so they drop `--read-only`.
 
-**Run:** `.venv/bin/python run_sandbox_experiments.py --seeds 3 && .venv/bin/python make_sandbox_charts.py` (~2 min).
+**Run**
+```
+.venv/bin/python run_sandbox_experiments.py --backend bwrap  --seeds 3                    # ~2 min
+GOVMEM_DOCKER="sudo docker" .venv/bin/python run_sandbox_experiments.py --backend docker --seeds 2 --runs-per-user 2   # ~45 min
+.venv/bin/python make_sandbox_charts.py
+```
+**CI.** `.github/workflows/experiments.yml` runs the original experiments plus the Docker-backend sandbox experiments on `ubuntu-latest` and uploads `results/`. *This file is not yet on GitHub* because the push token lacks the `workflow` scope; see the commit notes.
 
-**Experiments:**
-- 72 runs per mode, each killed with SIGKILL at a random step and then resumed in a fresh sandbox.
-- `forget_user` on 2 users, followed by a residue scan of snapshots (contents included), host logs, workdirs, the DB and raw DB bytes, plus a TTL purge.
-- Pooled vs. fresh vs. pooled-and-scrubbed sandboxes, 72 tasks each, with a probe that greps the working directory for other users' markers.
-- 12 escape and exfiltration attacks × 24 trials, comparing the sandbox with a scoped gateway against a plain subprocess with a gateway that trusts caller-supplied identity.
+**Results (mock LLM).** bwrap: 3 seeds, 72 runs/mode. Docker: 2 seeds, 32 runs/mode, measured locally with Docker 26.1.5 on Debian 13, cgroup v2. Sources: `results/sbx_summary.csv`, `sbx_pooling_summary.csv`, `sbx_escape_summary.csv`.
 
-**Results (3 seeds, mock LLM):** `results/sbx_summary.csv`, `sbx_pooling_summary.csv`, `sbx_escape_summary.csv`
+| metric | bwrap | docker |
+|---|---|---|
+| cold start to READY (mean over modes) | 27–31 ms | 279–306 ms |
+| warm start (pooled container, `docker exec`) | n/a (same as cold, 28.7 ms) | 214 ms |
+| tar snapshot / `docker commit` time | 2.7 ms / – | 2.4 ms / 58–64 ms |
+| snapshot size: tar / commit layer | 3.3 KB / – | 3.3 KB / 6.8 KB |
+| resume latency, stateless / tar / commit | 32 / 34 ms | 292 / 318 / 295 ms |
+| pooled-sandbox cross-user leak (fresh / pooled / scrubbed) | 0 / 91.7% / 0 | 0 / 91.7% / 0 |
+| escape successes, scoped sandbox (17 attack types) | 0/408 | 0/272 |
+| escape successes, plain subprocess + unscoped gateway | 312/408 | 208/272 |
+| gateway denials audited | 144/144 | 96/96 |
 
-| | none | (a) stateless+ckpt | (b) naive snapshot | (c) tracked snapshot |
+| deletion residue per forgotten user | naive tar (b) | tracked tar (c) | naive commit (b') | tracked commit (c') |
 |---|---|---|---|---|
-| resume completed / final state correct | 100% / 100% | 100% / 100% | 87.5% / 87.5% | 90.3% / 90.3% |
-| torn-state resume failures (of 72) | 0 | 0 | 9 | 7 |
-| steps re-executed per crash (completed runs) | 7.49 | 0.26 | 0.27 | 0.22 |
-| snapshot files with deleted user's data (per user) | 0 | 0 | 3.0 | 0 |
-| host sandbox logs with deleted user's data (per user) | 0 | 0 | 5.33 | 0 |
-| snapshot/log files left after TTL purge | 0/108 | 0/108 | 216/216 | 0/162 |
-| sandbox start / snapshot / resume latency (ms) | 26.8 / – / 32.4 | 26.8 / – / 35.6 | 26.2 / 2.3 / 32.2 | 26.5 / 2.4 / 33.4 |
-| mean snapshot size | – | – | 3.1 KB | 3.1 KB |
+| bwrap: snapshots / host logs | 3.0 / 5.67 | 0 / 0 | – | – |
+| docker: snapshots or images / host logs | 2.0 / 4.0 | 0 / 0 | **4.0 images** / 4.0 | 0 / 0 |
+| artifacts left after TTL purge (docker) | 96/96 | 0/72 | 128/128 | 0/96 |
 
-Other results:
-- **Sandbox reuse:** tasks that saw another user's data: fresh 0%, pooled **91.7%** (83.3% cross-tenant), pooled+scrubbed 0%.
-- **Escape attempts:** the scoped sandbox had 0 successes in 288 attempts (12 attack types × 24 trials). The plain, unscoped setup was breached in 240 of 288. Its two 0/24 results (forged token, other-task token) mean "not applicable" because that gateway ignores tokens. All 144 gateway-level denials were audited.
+| crash/resume (interrupted runs) | none | (a) | (b) | (c) |
+|---|---|---|---|---|
+| bwrap fidelity / torn-state failures / redone steps | 1.00 / 0 / 7.49 | 1.00 / 0 / 0.29 | 0.89 / 8 / 0.15 | 0.93 / 4 / 0.20 |
+| docker fidelity / torn / redone (commit modes: 1.00 / 0 / 0) | 1.00 / 0 / 8.13 | 1.00 / 0 / 0 | 1.00 / 0 / 0 | 1.00 / 0 / 0 |
 
-Charts: `results/fig_sbx_crash_resume.png`, `fig_sbx_deletion_ttl.png`, `fig_sbx_pooling.png`, `fig_sbx_escape.png`, `fig_sbx_overhead.png`.
+The Docker crash numbers are **not** comparable with bwrap. `docker kill` takes 0.1–0.2 s to land, so Docker steps sleep 300 ms (bwrap: 10 ms). Kills then almost always land during the sleep, after the checkpoint, which hides both torn writes and duplicated effects.
+
+Charts: `results/fig_sbx_crash_resume.png`, `fig_sbx_deletion.png`, `fig_sbx_ttl.png`, `fig_sbx_pooling.png`, `fig_sbx_escape.png`, `fig_sbx_overhead.png`.

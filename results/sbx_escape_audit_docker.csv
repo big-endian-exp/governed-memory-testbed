@@ -1,0 +1,5 @@
+backend,config,seed,gateway_denials,audited_denials
+docker,sandbox_scoped,0,48,48
+docker,plain_unscoped,0,0,0
+docker,sandbox_scoped,1,48,48
+docker,plain_unscoped,1,0,0

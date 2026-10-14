@@ -27,11 +27,11 @@ Audit rows equalled API calls exactly (coverage 1.00 over 8,659 calls), and the 
 ## RQ7 – Overhead
 | N records | write p50 gov/naive (ms) | search p50 gov/naive (ms) | forget_user gov/naive (ms) |
 |---|---|---|---|
-| 1,000 | 0.46 / 1.11 | 1.12 / 3.03 | 6.9 / 2.1 |
-| 4,000 | 0.52 / 1.11 | 3.42 / 12.20 | 52.4 / 5.6 |
-| 10,000 | 0.46 / 1.07 | 8.42 / 34.37 | 120.5 / 12.4 |
+| 1,000 | 0.47 / 1.11 | 1.16 / 2.85 | 8.7 / 2.7 |
+| 4,000 | 0.52 / 1.23 | 3.08 / 17.43 | 45.8 / 9.5 |
+| 10,000 | 0.53 / 1.22 | 7.87 / 36.44 | 149.2 / 24.5 |
 
-Governance added no measurable write penalty. The naive path is slower here only because it autocommits twice, so this is not a governance speedup. Search was 3–4× faster because namespace pre-filtering shrinks the candidate set. The real cost is deletion: lineage cascade plus secure_delete makes `forget_user` about 10× slower, though it still completes in about 0.12 s at 10k records. Storage overhead is +2.2% per record (17.5 KB vs 17.1 KB, dominated by the dense embedding blob in both).
+Governance added no measurable write penalty. The naive path is slower here only because it autocommits twice, so this is not a governance speedup. Search was 2.5–6× faster because namespace pre-filtering shrinks the candidate set. The real cost is deletion: lineage cascade plus secure_delete makes `forget_user` about 3–8× slower, though it still completes in about 0.15 s at 10k records. Storage overhead is +2.2% per record (17.5 KB vs 17.1 KB, dominated by the dense embedding blob in both).
 
 ## Limitations / threats to validity
 - **Mock LLM.** No API key was available, so a deterministic scripted LLM drove all three harnesses (keyword tool selection, extractive summaries). Governance guarantees are enforced below the LLM and do not depend on model quality. However, we did not measure task success, prompt-injection-induced exfiltration attempts, or whether real abstractive summaries paraphrase deleted data in ways canary matching would miss. Real-LLM runs require `OPENAI_API_KEY` or `ANTHROPIC_API_KEY`, and the backend is already pluggable.
@@ -42,22 +42,47 @@ Governance added no measurable write penalty. The naive path is slower here only
 - **Crash model.** Crashes are injected only between steps. Torn writes mid-checkpoint and non-deterministic plans were not tested.
 
 ## RQ8 – Governance across the sandbox boundary
-**Setup.** Each agent task ran in a short-lived bubblewrap sandbox: no network, private namespaces, cleared environment, read-only system, per-task working directory, and no DB access. Docker and podman were not available on the test host. Memory was reachable only through a Unix-socket gateway that checks a per-(tenant, user, task) HMAC token with an operation scope and expiry. We compared four persistence modes: no persistence; (a) a stateless sandbox with governed checkpoints written through the gateway; (b) a naive filesystem tarball persisted between runs; and (c) the same tarballs, plus host logs, tracked as derived artifacts with TTL and cascading deletion. Results come from 3 seeds and the deterministic mock LLM.
+**Setup.** Each agent task ran in a short-lived sandbox under one of two pluggable backends.
+- **bubblewrap:** no network, private namespaces, cleared environment, read-only system, per-task work directory.
+- **Docker 26.1.5:** `--network none`, read-only rootfs with a tmpfs work directory, all capabilities dropped, `no-new-privileges`, CPU, memory and PID limits, and the host UID.
 
-**Crash/resume.** 72 runs per mode were SIGKILLed at a random step and resumed in a fresh sandbox. Mode (a) resumed 100% of runs with correct final state. Snapshot modes (b) and (c) failed to resume in 9/72 and 7/72 runs, because the kill landed while the agent was rewriting its state file and the snapshot captured a truncated, torn file. Tracking snapshots in lineage did not fix this, since the failure is about atomicity, not governance. Transactional checkpoints in the governed store avoid it. Without persistence, every resume re-executed 7.49 steps on average. With any persistence the figure was 0.22–0.27, but 21–27% of completed runs still duplicated one external side effect, because a kill can land between the effect and the checkpoint. Checkpointing alone therefore gives at-least-once behaviour. Exactly-once needs idempotency keys on effects.
+Neither backend could reach the database or the Docker socket. Memory was reachable only through a Unix-socket gateway that checks an HMAC token scoped to tenant, user, task, operations and expiry.
 
-**Right-to-delete.** After `forget_user`, mode (b) still held the deleted user's data in 3.0 snapshot tarballs and 5.33 host sandbox logs per user. Modes (a) and (c) held none, and no mode left DB records or raw DB bytes. Retention showed the same pattern. After the TTL elapsed and a purge ran, all 216 untracked snapshot and log files in (b) remained, while (c) removed 162/162 and (a) removed 108/108. Sandbox artifacts are derived data, and they escape governance unless they are registered with the memory service.
+We compared:
+- no persistence
+- (a) a stateless sandbox with governed checkpoints
+- (b) a naive tarball of the work directory
+- (c) the same tarball, tracked as a derived artifact with TTL and cascading deletion
+- Docker only: (b') a naive `docker commit` and (c') a tracked `docker commit`
 
-**Sandbox reuse.** With warm sandboxes pooled without scrubbing, 91.7% of tasks could read another user's data from leftover files, and 83.3% read data from another tenant. Fresh sandboxes and scrubbed pooled sandboxes both gave 0%. Governed memory does not protect data that the agent puts on its own disk.
+bwrap results cover 3 seeds (72 interrupted runs per mode), Docker results 2 seeds (32 per mode). All runs used the deterministic mock LLM.
 
-**Escape and prompt injection.** A malicious or prompt-injected agent made 12 kinds of attempt, 24 trials each. Examples include spoofing identity fields, forging or replaying tokens, out-of-scope operations, following a poisoned memory instruction to fetch another user's data, opening or reading the DB file, and reading host env, network, processes, or another task's workdir. Against the sandbox with a scoped gateway, all 288 attempts failed and all 144 gateway-level denials were audited. A plain subprocess with an identity-trusting gateway allowed 240/288. The two attack types that failed there (forged token, other-task token replay) failed only because that gateway ignores tokens. The mock agent always "followed" the injected instruction, so the 0% here reflects containment, not model robustness.
+**Crash/resume.** Under bwrap, (a) resumed every interrupted run with correct final state. The tarball modes failed to resume in 8/72 (b) and 4/72 (c) runs, because the SIGKILL hit while the agent was rewriting its state file and the snapshot captured a torn file. Lineage tracking does not fix this. Transactional checkpoints do. Without persistence, every resume repeated 7.49 steps. With checkpoints, 0.29 steps were repeated on average, and 28.6% of completed runs duplicated one external effect. Checkpointing gives at-least-once semantics, and exactly-once needs idempotency keys. Under Docker, all modes, including both commit modes, reached 100% fidelity with 0 repeated steps. This is an artefact of the harness, not a Docker property. `docker kill` takes 0.1–0.2 s to land, so Docker steps were lengthened to 300 ms, and kills then landed during the idle part of the step, after the state was saved. A fair Docker crash comparison needs in-container fault injection.
 
-**Overhead.** Sandbox start was about 26–27 ms in every mode. Snapshotting took about 2.3 ms for a 3.1 KB tarball. Resume latency (restore plus start until the first step) was 32–36 ms in every mode. At this scale, governance adds no measurable latency at the sandbox boundary.
+**Right-to-delete across sandbox artifacts.** After `forget_user`, both backends showed the same pattern. Naive tarballs still held the deleted user's data (3.0 per user under bwrap, 2.0 under Docker), and so did untracked host sandbox logs (5.67 and 4.0 per user). **Naive `docker commit` snapshots left the user's data in 4.0 images per user.** Each resume commits a new image on top of the previous one, so the data persists in parent layers as well as in the tagged image. Tracked tarballs and tracked commits left 0. For tracked commits, `docker rmi` of the registered tag also removed the untagged parent images. After the retention TTL, untracked artifacts all remained: Docker tar 96/96, commit 128/128, bwrap 216/216. Tracked ones were all purged: Docker 72/72 and 96/96, bwrap 162/162. No mode left records or raw bytes in the governed database.
+
+**Sandbox reuse.** Reusing pooled sandboxes without scrubbing exposed another user's data to 91.7% of tasks under both backends (cross-tenant: 83.3% bwrap, 89.6% Docker). Fresh sandboxes and scrubbed pooled sandboxes gave 0% on both. This held even with Docker's read-only rootfs, because the leak sits in the writable tmpfs `/work` that a warm container keeps. Hardening the container image does not replace per-tenant scrubbing.
+
+**Escape and prompt injection.** 17 attack types were scripted. 12 target memory or host resources: identity spoofing, forged, expired or replayed tokens, out-of-scope operations, a poisoned-memory prompt injection that asks for another user's data, opening or reading the DB file, host env, network, host processes, and another task's workdir. 5 check the container boundary: Docker socket present, host filesystem reachable, non-zero effective capabilities, `no_new_privs` unset, and a writable rootfs. With the scoped gateway, the sandbox stopped every attempt under both backends (bwrap 0/408, Docker 0/272), and every gateway-level denial was audited (144/144 and 96/96). A plain subprocess with an identity-trusting gateway allowed 312/408 and 208/272. Its only failures were the token attacks, which do not apply to a gateway that ignores tokens, plus non-zero capabilities and a writable `/usr`, which an unprivileged host user also lacks. The mock agent always "followed" the injected instruction, so the 0% reflects containment, not model robustness.
+
+**Overhead.**
+
+| | bwrap | Docker |
+|---|---|---|
+| Cold start to agent-ready | 27–31 ms | 279–306 ms |
+| Warm start in a pooled container | – | 214 ms |
+| Tarball snapshot | 2.7 ms, 3.3 KB | 2.4 ms, 3.3 KB |
+| `docker commit` | – | 58–64 ms, 6.8 KB layer |
+| Resume latency | 32–38 ms | 292–342 ms |
+
+Docker costs about 10× more per sandbox start. Warm pooling saves about 30%, but that is exactly the configuration that leaked in the reuse test unless scrubbed. The governance additions (gateway checks, artifact registration) did not measurably change latency compared with the untracked modes.
+
+**Re-run check.** We re-ran the original experiments (RQ1–RQ7) after the sandbox changes to the store. All correctness metrics were bit-identical. Only latency changed, within run-to-run noise; the RQ7 table above shows the re-run numbers.
 
 **Additional limitations (sandbox).**
-- bubblewrap is not a container or VM boundary.
-- The sandboxes ran locally on a single host, using a toy 3 KB working directory. Real snapshots (dependencies, caches) are orders of magnitude larger, so snapshot and restore cost is understated.
-- Kills land only at step boundaries detected by the host, with the race window set by a 10 ms step sleep.
-- Attacks are scripted, not generated by a real LLM.
-- Residue detection uses verbatim markers, so it misses paraphrased data.
-- The unscoped baseline is deliberately weak.
+- Single host, with a toy work directory of about 3 KB. Real images and snapshots carry dependencies and caches, so snapshot cost and the size of committed-layer residue are understated.
+- Different kill-timing regimes per backend, as described above.
+- Docker ran rootful (dockerd as root, containers as the host UID). Rootless Docker, gVisor and Kata were not tested.
+- `docker save` was the only way residue in images was checked. Registries, build cache and exported image tarballs were not scanned.
+- Attacks are scripted, not model-generated, and residue detection uses verbatim markers only.
+- The Docker results come from fewer seeds and runs than the bwrap results.

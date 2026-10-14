@@ -1,0 +1,7 @@
+backend,config,seed,gateway_denials,audited_denials
+bwrap,sandbox_scoped,0,48,48
+bwrap,plain_unscoped,0,0,0
+bwrap,sandbox_scoped,1,48,48
+bwrap,plain_unscoped,1,0,0
+bwrap,sandbox_scoped,2,48,48
+bwrap,plain_unscoped,2,0,0

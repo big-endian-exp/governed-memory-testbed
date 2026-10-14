@@ -1,0 +1,13 @@
+backend,mode,seed,artifacts_before_ttl,artifacts_after_ttl,images_before_forget
+bwrap,none,0,36,0,0
+bwrap,stateless,0,36,0,0
+bwrap,snapshot,0,72,72,0
+bwrap,tracked_snapshot,0,54,0,0
+bwrap,none,1,36,0,0
+bwrap,stateless,1,36,0,0
+bwrap,snapshot,1,72,72,0
+bwrap,tracked_snapshot,1,54,0,0
+bwrap,none,2,36,0,0
+bwrap,stateless,2,36,0,0
+bwrap,snapshot,2,72,72,0
+bwrap,tracked_snapshot,2,54,0,0

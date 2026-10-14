@@ -1,0 +1,13 @@
+backend,mode,seed,artifacts_before_ttl,artifacts_after_ttl,images_before_forget
+docker,none,0,24,0,0
+docker,stateless,0,24,0,0
+docker,snapshot,0,48,48,0
+docker,tracked_snapshot,0,36,0,0
+docker,commit_snapshot,0,64,64,32
+docker,tracked_commit,0,48,0,32
+docker,none,1,24,0,0
+docker,stateless,1,24,0,0
+docker,snapshot,1,48,48,0
+docker,tracked_snapshot,1,36,0,0
+docker,commit_snapshot,1,64,64,32
+docker,tracked_commit,1,48,0,32
