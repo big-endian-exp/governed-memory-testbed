@@ -18,6 +18,8 @@ DEFAULT_ACL = {
                   "scopes": {"user"}, "max_sens": "restricted"},
     "rag":       {"read": {"semantic", "episodic"}, "write": {"semantic"},
                   "scopes": {"user", "tenant"}, "max_sens": "internal"},
+    "sandbox":   {"read": {"episodic", "semantic", "working"}, "write": {"working", "episodic"},
+                  "scopes": {"user"}, "max_sens": "confidential"},
     "admin":     {"read": set(TYPES), "write": set(), "scopes": {"user", "tenant"}, "max_sens": "restricted"},
 }
 
@@ -27,6 +29,7 @@ CREATE TABLE IF NOT EXISTS memory(id TEXT PRIMARY KEY, tenant TEXT, user TEXT, s
   key TEXT, content TEXT, sensitivity TEXT, created REAL, expires REAL, version INT, superseded_by TEXT,
   src_harness TEXT, src_ref TEXT, src_hash TEXT);
 CREATE INDEX IF NOT EXISTS ix_ns ON memory(tenant,user,mtype);
+CREATE TABLE IF NOT EXISTS artifact(record_id TEXT, path TEXT);
 CREATE TABLE IF NOT EXISTS lineage(child TEXT, parent TEXT);
 CREATE TABLE IF NOT EXISTS embedding(id TEXT PRIMARY KEY, tenant TEXT, user TEXT, vec BLOB);
 CREATE TABLE IF NOT EXISTS audit(seq INTEGER PRIMARY KEY AUTOINCREMENT, ts REAL, harness TEXT, tenant TEXT,
@@ -37,7 +40,7 @@ CREATE TRIGGER IF NOT EXISTS audit_no_del BEFORE DELETE ON audit BEGIN SELECT RA
 
 class GovernedMemory:
     def __init__(self, path, acl=None, secure_delete=True, clock=time.time):
-        self.db = sqlite3.connect(path, isolation_level=None)
+        self.db = sqlite3.connect(path, isolation_level=None, check_same_thread=False)
         self.db.execute(f"PRAGMA secure_delete={'ON' if secure_delete else 'OFF'}")
         self.db.executescript(SCHEMA)
         self.acl, self.clock = acl or DEFAULT_ACL, clock
@@ -99,6 +102,16 @@ class GovernedMemory:
         self._index[rid] = (tenant, owner, v)
         return rid
 
+    def register_artifact(self, harness, tenant, user, path, *, ttl=None, derived_from=(), kind="snapshot"):
+        """Track an out-of-DB artifact (snapshot tarball, sandbox log) as a derived record: it inherits
+        TTL and is removed (file unlinked) by cascading delete."""
+        import os
+        h = hashlib.sha256(open(path, "rb").read()).hexdigest()
+        rid = self.write(harness, tenant, user, "working", f"artifact:{kind} sha256={h}", ttl=ttl,
+                         sensitivity="restricted", src_ref=os.path.basename(path), derived_from=derived_from)
+        self.db.execute("INSERT INTO artifact VALUES(?,?)", (rid, path))
+        return rid
+
     # ---------- read ----------
     def _visible_rows(self, harness, tenant, user, mtypes):
         a = self.acl[harness]; now = self.clock()
@@ -156,16 +169,22 @@ class GovernedMemory:
         if allids:
             allids |= {r[0] for r in self.db.execute(
                 f"SELECT id FROM memory WHERE superseded_by IN ({','.join('?'*len(allids))})", list(allids))}
-        self.db.execute("BEGIN")
         L = list(allids)
+        import os
+        paths = [p for ch in [L[i:i+500] for i in range(0, len(L), 500)] for (p,) in self.db.execute(
+            f"SELECT path FROM artifact WHERE record_id IN ({','.join('?'*len(ch))})", ch)]
+        self.db.execute("BEGIN")
         for chunk in [L[i:i+500] for i in range(0, len(L), 500)]:
             ph = ",".join("?"*len(chunk))
+            self.db.execute(f"DELETE FROM artifact WHERE record_id IN ({ph})", chunk)
             for sql in (f"DELETE FROM memory WHERE id IN ({ph})", f"DELETE FROM embedding WHERE id IN ({ph})",
                         f"DELETE FROM lineage WHERE child IN ({ph}) OR parent IN ({ph})"):
                 self.db.execute(sql, chunk * sql.count(ph))
         self._audit(who, tenant, user, op, f"{len(allids)} records", "allow")
         self.db.execute("COMMIT")
         for i in allids: self._index.pop(i, None)
+        for p in paths:
+            if os.path.exists(p): os.remove(p)
         return len(allids)
 
 

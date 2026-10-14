@@ -60,3 +60,45 @@ The evaluation section draft is in `results/evaluation_draft.md`.
 
 ## Caveats
 The mock LLM and synthetic data are described in the evaluation draft's limitations. The naive write path is slower only because it autocommits twice per record while the governed path uses one transaction. Treat the write-latency comparison as "no measurable governance penalty", not as a speedup.
+
+## Sandbox experiment: governance across the sandbox boundary
+**Runtime.** This host has no Docker or podman, so each task runs in a short-lived **bubblewrap** sandbox (`govmem/sandbox.py`) with:
+- no network (`--unshare-all`) and its own PID, IPC, UTS and user namespaces
+- a cleared environment and read-only `/usr`
+- a per-task `/work` directory and the gateway socket directory as its only writable mounts
+- no access to the DB file
+
+The in-sandbox agent (`govmem/sandbox_agent.py`, stdlib only) reaches memory only through the **gateway** (`govmem/gateway.py`). The gateway is JSON-lines RPC over a Unix socket. Each call carries an HMAC token scoped to (tenant, user, task, operations, expiry). Identity comes only from the verified token, never from request fields. Every denial is written to the hash-chained audit log, and the gateway records an external side-effect ledger per task.
+
+**Persistence modes compared:**
+- `none`: no persistence (reference).
+- `stateless` (a): an ephemeral sandbox plus governed checkpoints written through the gateway.
+- `snapshot` (b): the naive approach. The sandbox filesystem is tarballed after each run and restored on resume, and nothing tracks it.
+- `tracked_snapshot` (c): the same tarballs plus host logs, registered with `register_artifact()` as derived records. They inherit TTL and are unlinked by the `forget_user` cascade. Mode (a) registers its host logs the same way.
+
+**Run:** `.venv/bin/python run_sandbox_experiments.py --seeds 3 && .venv/bin/python make_sandbox_charts.py` (~2 min).
+
+**Experiments:**
+- 72 runs per mode, each killed with SIGKILL at a random step and then resumed in a fresh sandbox.
+- `forget_user` on 2 users, followed by a residue scan of snapshots (contents included), host logs, workdirs, the DB and raw DB bytes, plus a TTL purge.
+- Pooled vs. fresh vs. pooled-and-scrubbed sandboxes, 72 tasks each, with a probe that greps the working directory for other users' markers.
+- 12 escape and exfiltration attacks × 24 trials, comparing the sandbox with a scoped gateway against a plain subprocess with a gateway that trusts caller-supplied identity.
+
+**Results (3 seeds, mock LLM):** `results/sbx_summary.csv`, `sbx_pooling_summary.csv`, `sbx_escape_summary.csv`
+
+| | none | (a) stateless+ckpt | (b) naive snapshot | (c) tracked snapshot |
+|---|---|---|---|---|
+| resume completed / final state correct | 100% / 100% | 100% / 100% | 87.5% / 87.5% | 90.3% / 90.3% |
+| torn-state resume failures (of 72) | 0 | 0 | 9 | 7 |
+| steps re-executed per crash (completed runs) | 7.49 | 0.26 | 0.27 | 0.22 |
+| snapshot files with deleted user's data (per user) | 0 | 0 | 3.0 | 0 |
+| host sandbox logs with deleted user's data (per user) | 0 | 0 | 5.33 | 0 |
+| snapshot/log files left after TTL purge | 0/108 | 0/108 | 216/216 | 0/162 |
+| sandbox start / snapshot / resume latency (ms) | 26.8 / – / 32.4 | 26.8 / – / 35.6 | 26.2 / 2.3 / 32.2 | 26.5 / 2.4 / 33.4 |
+| mean snapshot size | – | – | 3.1 KB | 3.1 KB |
+
+Other results:
+- **Sandbox reuse:** tasks that saw another user's data: fresh 0%, pooled **91.7%** (83.3% cross-tenant), pooled+scrubbed 0%.
+- **Escape attempts:** the scoped sandbox had 0 successes in 288 attempts (12 attack types × 24 trials). The plain, unscoped setup was breached in 240 of 288. Its two 0/24 results (forged token, other-task token) mean "not applicable" because that gateway ignores tokens. All 144 gateway-level denials were audited.
+
+Charts: `results/fig_sbx_crash_resume.png`, `fig_sbx_deletion_ttl.png`, `fig_sbx_pooling.png`, `fig_sbx_escape.png`, `fig_sbx_overhead.png`.
