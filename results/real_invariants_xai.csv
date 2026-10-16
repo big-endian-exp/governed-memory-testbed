@@ -1,0 +1,5 @@
+backend,seed,llm,results,leaked,leak_rate,own_hits,foreign_hits,post_forget_retrievable,provider
+governed,0,xai,600,0,0.0,120,0,0,xai
+naive,0,xai,600,120,0.2,90,18,8,xai
+governed,1,xai,600,0,0.0,117,0,0,xai
+naive,1,xai,600,120,0.2,90,15,8,xai

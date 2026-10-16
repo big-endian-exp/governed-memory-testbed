@@ -4,8 +4,8 @@ import matplotlib; matplotlib.use("Agg"); import matplotlib.pyplot as plt
 R = os.path.join(os.path.dirname(os.path.abspath(__file__)), "results")
 ld = lambda f: list(csv.DictReader(open(os.path.join(R, f)))) if os.path.exists(os.path.join(R, f)) else []
 mean = lambda xs: st.mean(xs) if xs else float("nan")
-PROV = ["anthropic", "codex"]; COL = {"anthropic": "#d97706", "codex": "#10a37f", "governed": "#1f77b4", "naive": "#d62728"}
-LBL = {"anthropic": "Claude (Anthropic API)", "codex": "OpenAI (Codex CLI)"}
+PROV = ["anthropic", "codex", "xai"]; COL = {"anthropic": "#d97706", "codex": "#10a37f", "xai": "#000000", "governed": "#1f77b4", "naive": "#d62728"}
+LBL = {"anthropic": "Claude (Anthropic)", "codex": "OpenAI (Codex CLI)", "xai": "Grok (xAI)"}
 
 S = []
 # invariants
@@ -38,6 +38,7 @@ for p in PROV:
                       summary_left_rate=mean([float(r["summary_row_left"]) for r in rows])))
 # attacks
 atk = ld("real_attacks_bwrap.csv") + ld("real_attacks_docker.csv")
+PROV = [p for p in ("anthropic", "codex", "xai") if any(r.get("provider")==p for r in inv+ts+sr+atk)]
 for p in PROV:
     rows = [r for r in atk if r.get("provider") == p]
     if not rows: continue

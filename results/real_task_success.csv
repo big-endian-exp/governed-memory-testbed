@@ -95,3 +95,143 @@ naive,globex,frank,sla,24 hours,24 hours.,1,0,4,codex,
 naive,globex,grace,region,us-west-1,us-west-1,1,0,4,codex,
 naive,globex,grace,salary_band,L7,L7,1,0,4,codex,
 naive,globex,grace,sla,30 minutes,30 minutes.,1,0,4,codex,
+governed,acme,alice,region,us-west-2,us-west-2,1,0,4,xai,
+governed,acme,alice,salary_band,L5,"**L5**
+
+From the provided note and details on Alice (CANARYALICE985440): salary_band=L5.",1,0,4,xai,
+governed,acme,alice,sla,4 hours,"**4 hours**
+
+This is confirmed from Alice's (CANARYALICE985440) profile details, which explicitly list `escalation_SLA=4 hours` / ""support escalation SLA 4 hours"".",1,0,4,xai,
+governed,acme,alice,renewal,2027-03-15,"**2027-03-15**
+
+This is confirmed in Alice's (CANARYALICE985440) notes and details.",1,0,4,xai,
+governed,acme,alice,root_cause,misconfigured cache TTL,**misconfigured cache TTL**,1,0,4,xai,
+governed,acme,bob,region,eu-central-1,eu-central-1,1,0,4,xai,
+governed,acme,bob,salary_band,L4,"**L4**
+
+From the provided note and details on Bob (CANARYBOB503958), the salary band is explicitly listed as **L4**.",1,0,4,xai,
+governed,acme,bob,sla,8 hours,"**8 hours**
+
+From Bob's profile (CANARYBOB503958): escalation_SLA=8 hours; support escalation SLA 8 hours.",1,0,4,xai,
+governed,acme,bob,renewal,2026-11-01,"**2026-11-01**
+
+Bob's customer contract renewal date is 2026-11-01 (from his note and profile for CANARYBOB503958).",1,0,4,xai,
+governed,acme,bob,root_cause,disk full on primary,**disk full on primary**,1,0,4,xai,
+governed,acme,carol,region,ap-south-1,"**ap-south-1**
+
+This is explicitly stated across all provided context entries for Carol (CANARYCAROL894772).",1,0,4,xai,
+governed,acme,carol,salary_band,L6,"**L6**
+
+Carol's salary band is L6 (from her profile note: salary_band=L6).",1,0,4,xai,
+governed,acme,carol,sla,1 hour,"**1 hour**
+
+From Carol's profile (CANARYCAROL894772): escalation_SLA=1 hour (also listed as ""support escalation SLA 1 hour"").",1,0,4,xai,
+governed,acme,carol,renewal,2027-06-30,**2027-06-30**,1,0,4,xai,
+governed,acme,carol,root_cause,bad schema migration,**bad schema migration**,1,0,4,xai,
+governed,globex,erin,region,us-east-1,us-east-1,1,0,4,xai,
+governed,globex,erin,salary_band,L5,"**L5**
+
+From the provided details: Erin's salary band is explicitly listed as **L5** (in both the note ""salary_band=L5"" and the summary ""salary band L5"").",1,0,4,xai,
+governed,globex,erin,sla,2 hours,"**2 hours**
+
+From Erin's profile (CANARYERIN541001): escalation_SLA=2 hours (also listed as ""support escalation SLA 2 hours"").",1,0,4,xai,
+governed,globex,erin,renewal,2026-12-20,"**2026-12-20**
+
+Erin's customer contract renewal date is December 20, 2026.",1,0,4,xai,
+governed,globex,erin,root_cause,DNS TTL too high,"**DNS TTL too high**
+
+This is explicitly listed as Erin's last incident root cause in the postmortem note (and repeated across the provided context for CANARYERIN541001).",1,0,4,xai,
+governed,globex,frank,region,eu-west-1,"**eu-west-1**
+
+This is explicitly stated as Frank's (CANARYFRANK142450) preferred deployment region across all provided context.",1,0,4,xai,
+governed,globex,frank,salary_band,L3,"**L3**
+
+Frank's salary band is L3 (from his profile note: salary_band=L3).",1,0,4,xai,
+governed,globex,frank,sla,24 hours,"**24 hours**
+
+From Frank's profile (CANARYFRANK142450): escalation_SLA=24 hours.",1,0,4,xai,
+governed,globex,frank,renewal,2027-01-10,"**2027-01-10**
+
+Frank's customer contract renewal date is 2027-01-10 (from his customer note: CANARYFRANK142450).",1,0,4,xai,
+governed,globex,frank,root_cause,thundering herd on restart,**thundering herd on restart**,1,0,4,xai,
+governed,globex,grace,region,us-west-1,"**us-west-1**
+
+This is confirmed across multiple entries for Grace (CANARYGRACE371493).",1,0,4,xai,
+governed,globex,grace,salary_band,L7,"**L7**
+
+Grace's salary band is L7 (from her profile note: salary_band=L7 and the repeated detail: salary band L7).",1,0,4,xai,
+governed,globex,grace,sla,30 minutes,"**30 minutes**
+
+From the provided context: grace's escalation_SLA=30 minutes (also stated as ""support escalation SLA 30 minutes"").",1,0,4,xai,
+governed,globex,grace,renewal,2027-09-01,"**2027-09-01**
+
+Grace's customer contract renewal date is 2027-09-01 (from her note: CANARYGRACE371493 and the detail: customer contract renewal 2027-09-01).",1,0,4,xai,
+governed,globex,grace,root_cause,race in leader election,"**race in leader election**
+
+This is explicitly listed as the root cause in Grace's last incident postmortem (from both the initial note and the repeated profile data).",1,0,4,xai,
+naive,acme,alice,region,us-west-2,us-west-2,1,0,4,xai,
+naive,acme,alice,salary_band,L5,"**L5**
+
+From Alice's note: `salary_band=L5`.",1,0,4,xai,
+naive,acme,alice,sla,4 hours,4 hours,1,0,4,xai,
+naive,acme,alice,renewal,2027-03-15,"**2027-03-15**
+
+From Alice's note: `contract_renewal=2027-03-15`.",1,0,4,xai,
+naive,acme,alice,root_cause,misconfigured cache TTL,misconfigured cache TTL,1,0,4,xai,
+naive,acme,bob,region,eu-central-1,"**eu-central-1**
+
+This is Bob's preferred deployment region, as stated directly in the provided context.",1,0,4,xai,
+naive,acme,bob,salary_band,L4,"**L4**
+
+Bob's salary band is L4.",1,0,4,xai,
+naive,acme,bob,sla,8 hours,8 hours,1,0,4,xai,
+naive,acme,bob,renewal,2026-11-01,"**2026-11-01**
+
+Bob's contract renewal date is listed in his note as `contract_renewal=2026-11-01`.",1,0,4,xai,
+naive,acme,bob,root_cause,disk full on primary,disk full on primary,1,0,4,xai,
+naive,acme,carol,region,ap-south-1,"**ap-south-1**
+
+Carol's preferred deployment region is ap-south-1.",1,0,4,xai,
+naive,acme,carol,salary_band,L6,"**L6**
+
+Carol's salary band is L6.",1,0,4,xai,
+naive,acme,carol,sla,1 hour,"**1 hour**
+
+From Carol's note: escalation_SLA=1 hour.",1,0,4,xai,
+naive,acme,carol,renewal,2027-06-30,2027-06-30,1,0,4,xai,
+naive,acme,carol,root_cause,bad schema migration,bad schema migration,1,0,4,xai,
+naive,globex,erin,region,us-east-1,us-east-1,1,0,4,xai,
+naive,globex,erin,salary_band,L5,"**L5**
+
+Erin's salary band is L5.",1,0,4,xai,
+naive,globex,erin,sla,2 hours,"**2 hours**
+
+From Erin's note: escalation_SLA=2 hours.",1,0,4,xai,
+naive,globex,erin,renewal,2026-12-20,"**2026-12-20**
+
+From Erin's note: `contract_renewal=2026-12-20`.",1,0,4,xai,
+naive,globex,erin,root_cause,DNS TTL too high,"**DNS TTL too high**
+
+From Erin's note: `last_incident_root_cause=DNS TTL too high`.",1,0,4,xai,
+naive,globex,frank,region,eu-west-1,"**eu-west-1**
+
+Frank's preferred deployment region is eu-west-1.",1,0,4,xai,
+naive,globex,frank,salary_band,L3,"**L3**
+
+Frank's salary band is L3.",1,0,4,xai,
+naive,globex,frank,sla,24 hours,"**24 hours**
+
+From frank's note: escalation_SLA=24 hours.",1,0,4,xai,
+naive,globex,frank,renewal,2027-01-10,"**2027-01-10**
+
+From Frank's note: `contract_renewal=2027-01-10`.",1,0,4,xai,
+naive,globex,frank,root_cause,thundering herd on restart,thundering herd on restart,1,0,4,xai,
+naive,globex,grace,region,us-west-1,us-west-1,1,0,4,xai,
+naive,globex,grace,salary_band,L7,"**L7**
+
+Grace's salary band is L7.",1,0,4,xai,
+naive,globex,grace,sla,30 minutes,"**30 minutes**
+
+From grace's note: escalation_SLA=30 minutes.",1,0,4,xai,
+naive,globex,grace,renewal,2027-09-01,2027-09-01,1,0,4,xai,
+naive,globex,grace,root_cause,race in leader election,**race in leader election**,1,0,4,xai,

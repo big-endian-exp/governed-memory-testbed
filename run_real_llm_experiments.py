@@ -303,6 +303,7 @@ def write_usage():
     from govmem.llm import usage_summary
     open(os.path.join(R, "real_llm_cost.json"), "w").write(json.dumps({
         "usd_estimate_anthropic": round(cost_usd("anthropic"), 4),
+        "usd_estimate_xai": round(cost_usd("xai"), 4),
         "usd_estimate_codex": 0.0, "codex_note": "ChatGPT Pro plan via Codex CLI; no per-token $ charged here",
         "calls": len(USAGE),
         "uncached_calls": sum(1 for u in USAGE if not u["cached"]),
@@ -343,37 +344,42 @@ def run_suite(provider, attacks, seeds, skip_docker, task_keys=None):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--provider", default="anthropic", choices=["anthropic", "codex", "both"])
+    ap.add_argument("--provider", default="anthropic", choices=["anthropic", "codex", "xai", "both", "all"])
     ap.add_argument("--skip-docker", action="store_true")
     ap.add_argument("--attacks", type=int, default=10)
     ap.add_argument("--seeds", type=int, default=2)
     a = ap.parse_args()
     os.makedirs(R, exist_ok=True)
-    providers = ["anthropic", "codex"] if a.provider == "both" else [a.provider]
+    if a.provider == "both": providers = ["anthropic", "codex"]
+    elif a.provider == "all": providers = ["anthropic", "codex", "xai"]
+    else: providers = [a.provider]
     if "anthropic" in providers and not os.environ.get("ANTHROPIC_API_KEY"):
         raise SystemExit("ANTHROPIC_API_KEY not set (load ~/.secrets/anthropic.env)")
+    if "xai" in providers and not os.environ.get("XAI_API_KEY"):
+        raise SystemExit("XAI_API_KEY not set")
     for p in providers:
-        if p == "anthropic":
-            run_suite("anthropic", attacks=a.attacks, seeds=a.seeds, skip_docker=a.skip_docker)
-        else:
+        if p == "codex":
             # Codex: fewer seeds/attacks/questions (CLI ~14k tokens/call, plan rate limits)
             run_suite("codex", attacks=min(6, a.attacks), seeds=1, skip_docker=True,
                       task_keys={"region", "salary_band", "sla"})
+        else:
+            # anthropic / xai: full Claude-comparable sizes
+            run_suite(p, attacks=a.attacks, seeds=a.seeds, skip_docker=a.skip_docker)
     # Merge per-provider CSVs into combined files for charts / paper
     for base in ("real_invariants", "real_task_success", "real_semantic_residue"):
         rows = []
-        for p in ("anthropic", "codex"):
+        for p in ("anthropic", "codex", "xai"):
             fp = os.path.join(R, f"{base}_{p}.csv")
             if os.path.exists(fp): rows += list(csv.DictReader(open(fp)))
         if rows: save(f"{base}.csv", rows)
     for b in ("bwrap", "docker"):
         rows = []
-        for p in ("anthropic", "codex"):
+        for p in ("anthropic", "codex", "xai"):
             fp = os.path.join(R, f"real_attacks_{b}_{p}.csv")
             if os.path.exists(fp): rows += list(csv.DictReader(open(fp)))
         if rows: save(f"real_attacks_{b}.csv", rows)
     write_usage()
-    print("DONE usd≈", round(cost_usd("anthropic"), 4), "(anthropic only; codex is plan-billed)",
+    print("DONE usd≈ anthropic", round(cost_usd("anthropic"), 4), "xai", round(cost_usd("xai"), 4), "(codex plan-billed)",
           "calls", len(USAGE), "by", usage_summary(), flush=True)
 
 if __name__ == "__main__": main()
