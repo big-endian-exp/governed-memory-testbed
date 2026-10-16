@@ -1,0 +1,5 @@
+backend,seed,llm,results,leaked,leak_rate,own_hits,foreign_hits,post_forget_retrievable,provider
+governed,0,anthropic,600,0,0.0,120,0,0,anthropic
+naive,0,anthropic,600,120,0.2,90,18,8,anthropic
+governed,1,anthropic,600,0,0.0,120,0,0,anthropic
+naive,1,anthropic,600,120,0.2,90,18,8,anthropic

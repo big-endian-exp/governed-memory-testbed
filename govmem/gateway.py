@@ -6,9 +6,9 @@ from .store import PolicyError
 class TokenError(Exception): pass
 
 class Gateway:
-    OPS = {"search", "get_ckpt", "put_ckpt", "effect", "write_episode"}
-    def __init__(self, mem, sock_path, scoped=True, clock=time.time):
-        self.mem, self.sock, self.scoped, self.clock = mem, sock_path, scoped, clock
+    OPS = {"search", "get_ckpt", "put_ckpt", "effect", "write_episode", "llm"}
+    def __init__(self, mem, sock_path, scoped=True, clock=time.time, llm=None):
+        self.mem, self.sock, self.scoped, self.clock, self.llm = mem, sock_path, scoped, clock, llm
         self.secret = os.urandom(32); self.lock = threading.Lock()
         self.effects = {}   # run_id -> list of executed step indices (side-effect ledger)
         self.stats = {"allowed": 0, "denied": 0}; self.denials = []
@@ -71,6 +71,11 @@ class Gateway:
             return True
         if op == "effect": self.effects.setdefault(run, []).append(req["i"]); return True
         if op == "write_episode": return m.write("sandbox", t, u, "episodic", req["text"], sensitivity="internal")
+        if op == "llm":
+            if self.llm is None: raise PolicyError("llm not configured")
+            from .llm import SYSTEM
+            kind = req.get("kind", "react")
+            return self.llm.chat(SYSTEM.get(kind, "You are a helpful assistant."), req["messages"], kind=kind, max_tokens=req.get("max_tokens", 250))
         raise PolicyError(f"unknown op {op}")
 
     def close(self): self.srv.shutdown(); self.srv.server_close()

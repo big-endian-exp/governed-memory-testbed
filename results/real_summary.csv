@@ -1,0 +1,3 @@
+provider,label,gov_leak,naive_leak,gov_task_acc,naive_task_acc,gov_cross_fact,naive_cross_fact,gov_verbatim,naive_verbatim,gov_semantic,naive_semantic,attack_success,n_attacks,attack_denials
+anthropic,Claude (Anthropic API),0.0,0.2,0.9666666666666667,0.9666666666666667,0.0,0.0,0.0,1.0,0.0,1.0,0.0,18,1.2222222222222223
+codex,OpenAI (Codex CLI),0.0,0.2,1.0,1.0,0.0,0.0,0.0,1.0,0.0,1.0,0.0,6,0.0

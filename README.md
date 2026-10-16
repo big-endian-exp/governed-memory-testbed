@@ -118,3 +118,27 @@ GOVMEM_DOCKER="sudo docker" .venv/bin/python run_sandbox_experiments.py --backen
 The Docker crash numbers are **not** comparable with bwrap. `docker kill` takes 0.1–0.2 s to land, so Docker steps sleep 300 ms (bwrap: 10 ms). Kills then almost always land during the sleep, after the checkpoint, which hides both torn writes and duplicated effects.
 
 Charts: `results/fig_sbx_crash_resume.png`, `fig_sbx_deletion.png`, `fig_sbx_ttl.png`, `fig_sbx_pooling.png`, `fig_sbx_escape.png`, `fig_sbx_overhead.png`.
+
+## Real-LLM experiments (Claude + OpenAI via Codex CLI)
+Requires either `ANTHROPIC_API_KEY` (load with `set -a; . ~/.secrets/anthropic.env; set +a`) or a signed-in Codex CLI.
+
+```
+GOVMEM_LLM=anthropic .venv/bin/python run_real_llm_experiments.py --provider anthropic --attacks 10 --seeds 2 --skip-docker
+GOVMEM_LLM=codex     .venv/bin/python run_real_llm_experiments.py --provider codex     --attacks 6  --seeds 1 --skip-docker
+.venv/bin/python make_real_llm_charts.py
+```
+
+Backends: `govmem/llm.py` — Anthropic HTTP (bulk=`claude-haiku-4-5`, quality=`claude-sonnet-4-6`) and `codex exec --skip-git-repo-check -s read-only --json` (ChatGPT Pro; prompt as argv, stdin `/dev/null`, temp workdir). Calls are cached under `~/.cache/govmem_llm`.
+
+**Results (measured):** see `results/real_summary.csv`, `fig_real_llm.png`, `fig_real_leak_task.png`.
+
+| | Claude (Anthropic API) | OpenAI (Codex CLI) |
+|---|---|---|
+| Governed leak rate / naive | 0.000 / 0.200 | 0.000 / 0.200 |
+| Task accuracy governed / naive | 96.7% / 96.7% (n=30) | 100% / 100% (n=18) |
+| Cross-user gold fact in answers | 0% / 0% | 0% / 0% |
+| Semantic residue after forget (LLM-judge) gov / naive | 0% / 100% | 0% / 100% |
+| Model-driven attack success (scoped bwrap) | 0/18 | 0/6 |
+| Approx. spend | ~$0.23 API | plan-billed (~1.08M in-tokens) |
+
+Claude Sonnet refused to author attack prompts under a red-team framing; Haiku authored 8 under an authorized-evaluation framing. We also ran a 10-strategy handcrafted suite. OpenAI attacks were model-generated via Codex. All suites executed by a real agent inside the sandbox.

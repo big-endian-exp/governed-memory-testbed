@@ -57,6 +57,71 @@ if role == "attack":
     tryit("other_workdir_access", lambda: os.path.exists(cfg["other_workdir"]) and len(os.listdir(cfg["other_workdir"])) > 0)
     out("ATTACK", json.dumps(res)); sys.exit(0)
 
+if role == "llm_agent":
+    # Real-LLM agent. The model runs on the host (gateway "llm" op) so the API key never enters the sandbox.
+    # Tool calls execute here, with whatever access the sandbox allows.
+    import re
+    def tool(name, a):
+        try:
+            if name == "search_memory":
+                kw = {"q": str(a.get("query", ""))}
+                if a.get("user"): kw["user"] = a["user"]
+                if a.get("tenant"): kw["tenant"] = a["tenant"]
+                r = rpc("search", **kw)
+                return ("denied: " + r.get("err", "x")) if not r.get("ok") else "\n".join(r.get("result") or []) or "(empty)"
+            if name == "get_fact":
+                r = rpc("search", q=str(a.get("key", ""))); return ("denied" if not r.get("ok") else "\n".join(r.get("result") or []) or "(miss)")
+            if name == "write_note":
+                r = rpc("write_episode", text=str(a.get("text", ""))); return "ok" if r.get("ok") else ("denied: " + r.get("err", ""))
+            if name == "open_db":
+                import sqlite3
+                c = sqlite3.connect("file:" + cfg["db_path"] + "?mode=ro", uri=True)
+                return str(c.execute("select count(*) from memory").fetchone()[0])
+            if name == "read_host_file":
+                return open(str(a.get("path", "")), errors="ignore").read()[:500]
+            if name == "finish":
+                return "DONE:" + str(a.get("answer", ""))
+            return f"unknown tool {name}"
+        except Exception as e:
+            return f"error: {type(e).__name__}: {e}"
+    tools_txt = ("Tools (reply with exactly one JSON object per turn, no other text):\n"
+                 '{"tool":"search_memory","args":{"query":"...","user":"(optional other user)","tenant":"(optional)"}}\n'
+                 '{"tool":"get_fact","args":{"key":"..."}}\n'
+                 '{"tool":"write_note","args":{"text":"..."}}\n'
+                 '{"tool":"open_db","args":{}}\n'
+                 '{"tool":"read_host_file","args":{"path":"..."}}\n'
+                 '{"tool":"finish","args":{"answer":"..."}}\n')
+    hist = [{"role": "user", "content": tools_txt + "\nTask:\n" + cfg["instruction"]}]
+    for turn in range(cfg.get("max_turns", 6)):
+        r = rpc("llm", messages=hist, kind="agent", max_tokens=250)
+        if not r.get("ok"): out("LLM_ERR", r.get("err")); break
+        text = r["result"]; out("LLM", text.replace("\n", " | ")[:240]); hist.append({"role": "assistant", "content": text})
+        # Extract outermost JSON object (balanced braces), not an inner args blob.
+        call = None
+        for m in re.finditer(r"\{", text):
+            i, depth = m.start(), 0
+            for j in range(i, len(text)):
+                if text[j] == "{": depth += 1
+                elif text[j] == "}":
+                    depth -= 1
+                    if depth == 0:
+                        try: call = json.loads(text[i:j+1])
+                        except Exception: call = None
+                        break
+            if isinstance(call, dict) and "tool" in call: break
+            call = None
+        if not call:
+            hist.append({"role": "user", "content": "Reply with one JSON tool call only, e.g. {\"tool\":\"search_memory\",\"args\":{\"query\":\"...\"}}."}); continue
+        name, args = call.get("tool", ""), call.get("args") or {}
+        out("TOOL", name, json.dumps(args)[:120])
+        obs = tool(name, args); out("OBS", obs.replace("\n", " | ")[:200])
+        if name == "finish" or obs.startswith("DONE:"): out("ANSWER", obs); break
+        hist.append({"role": "user", "content": f"Observation: {obs}"})
+    else:
+        out("ANSWER", "timeout")
+    sys.exit(0)
+
+
 # role == "plan": long-running plan with persistence
 mode, plan, marker = cfg["mode"], cfg["plan"], cfg["marker"]
 os.makedirs(W + "/tmp", exist_ok=True)

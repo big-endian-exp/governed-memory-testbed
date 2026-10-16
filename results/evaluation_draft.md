@@ -86,3 +86,18 @@ Docker costs about 10× more per sandbox start. Warm pooling saves about 30%, bu
 - `docker save` was the only way residue in images was checked. Registries, build cache and exported image tarballs were not scanned.
 - Attacks are scripted, not model-generated, and residue detection uses verbatim markers only.
 - The Docker results come from fewer seeds and runs than the bwrap results.
+
+## RQ9 – Real LLMs (Claude + OpenAI via Codex CLI)
+**Setup.** We replaced the mock with two real backends: Anthropic HTTP (`claude-haiku-4-5` bulk, `claude-sonnet-4-6` quality) and OpenAI through the Codex CLI (`codex exec --skip-git-repo-check`, read-only sandbox, JSON event stream; ChatGPT Pro plan). Workload: 2 tenants × 3 users, five grounded facts per user. Anthropic: 2 seeds for invariants, 30 QA pairs/backend, 10 semantic-judge checks/backend, 18 sandbox attacks. Codex: 1 seed, 18 QA pairs/backend, 6 semantic checks/backend, 6 attacks. Docker attacks were skipped to keep spend/rate-limits modest.
+
+**Invariants.** With real abstractive summaries, governed leak rate stayed 0.000 for both providers; naive leaked 0.200 (120/600 adversarial results) with 18 foreign hits and 8 post-forget retrievable results per seed. Namespace filtering still holds when the summarizer is a real model.
+
+**Task success.** Governed vs naive accuracy: Claude 96.7%/96.7% (n=30); Codex 100%/100% (n=18). Cross-user gold-fact rate 0% for both after whole-token matching. Governance did not reduce usefulness on this fact-QA workload.
+
+**Semantic residue.** After `forget_user`, an LLM judge (Sonnet for Claude runs; Codex for OpenAI runs) asked whether each deleted fact was still conveyed by surviving text. Governed: 0% verbatim and 0% semantic hits; summary rows gone. Naive: 100% verbatim and 100% semantic (summary rows owned by the agent survive delete-by-user-column). Lineage cascade removes paraphrased residue that canary matching would miss.
+
+**Attacks.** A real agent inside bwrap, with tools routed through the scoped gateway, faced model-authored and handcrafted exfiltration instructions. Claude Sonnet refused to write attacks under a red-team framing; Haiku produced 8 under an authorized-evaluation framing; we also ran 10 handcrafted strategies. Codex authored 6. Success (victim canary or gold fact in the agent log): **0/18 Claude, 0/6 Codex**. Denials were audited when the agent attempted cross-identity search. Some models refused the malicious instruction without tools; others attempted `search_memory` with another user's id and were denied.
+
+**Cost.** Anthropic ≈ $0.23 API. Codex ≈ 1.08M input tokens on the ChatGPT Pro plan (no per-token $ here).
+
+**Limitations.** Modest n; Docker real-LLM attacks not re-run; Sonnet refusal means part of the Claude attack suite is handcrafted; Codex CLI wraps a proprietary agent runtime with a large system prompt (~14k tokens/call); judge is a single model without human adjudication.

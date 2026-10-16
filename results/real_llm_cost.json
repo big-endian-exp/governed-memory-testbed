@@ -1,0 +1,10 @@
+{
+  "usd_estimate_anthropic": 0.228,
+  "usd_estimate_anthropic_note": "sum of per-phase logs; haiku bulk + sonnet quality",
+  "usd_estimate_codex": 0.0,
+  "codex_note": "ChatGPT Pro via Codex CLI (gpt-5.1 / default); ~1.08M input tokens, plan-billed",
+  "codex_uncached_calls": 71,
+  "codex_in_tokens": 1084433,
+  "codex_out_tokens": 2403,
+  "anthropic_approx_calls": 278
+}

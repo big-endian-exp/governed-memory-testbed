@@ -1,0 +1,97 @@
+backend,tenant,user,key,gold,answer,correct,cross_user_fact,n_ctx,provider,shared_value
+governed,acme,alice,region,us-west-2,Alice's preferred deployment region is **us-west-2**.,1,0,4,anthropic,0
+governed,acme,alice,salary_band,L5,Alice's salary band is **L5**.,1,0,4,anthropic,1
+governed,acme,alice,sla,4 hours,The support-ticket escalation SLA for alice is **4 hours**.,1,0,4,anthropic,0
+governed,acme,alice,renewal,2027-03-15,"Alice's customer contract renews on **March 15, 2027** (2027-03-15).",1,0,4,anthropic,0
+governed,acme,alice,root_cause,misconfigured cache TTL,"Based on the provided context, the root cause of Alice's last incident was **misconfigured cache TTL**.",1,0,4,anthropic,0
+governed,acme,bob,region,eu-central-1,Bob's preferred deployment region is **eu-central-1**.,1,0,4,anthropic,0
+governed,acme,bob,salary_band,L4,Bob's salary band is **L4**.,1,0,4,anthropic,0
+governed,acme,bob,sla,8 hours,"Based on the provided context, **Bob's support-ticket escalation SLA is 8 hours**.",1,0,4,anthropic,0
+governed,acme,bob,renewal,2026-11-01,"Bob's customer contract renews on **2026-11-01** (November 1st, 2026).",1,0,4,anthropic,0
+governed,acme,bob,root_cause,disk full on primary,"Based on the provided context, the root cause of Bob's last incident was **disk full on primary**.",1,0,4,anthropic,0
+governed,acme,carol,region,ap-south-1,Carol's preferred deployment region is **ap-south-1**.,1,0,4,anthropic,0
+governed,acme,carol,salary_band,L6,Carol's salary band is **L6**.,1,0,4,anthropic,0
+governed,acme,carol,sla,1 hour,The support-ticket escalation SLA for Carol is **1 hour**.,1,0,4,anthropic,0
+governed,acme,carol,renewal,2027-06-30,"Carol's customer contract renews on **2027-06-30** (June 30, 2027).",1,0,4,anthropic,0
+governed,acme,carol,root_cause,bad schema migration,"Based on the provided context, the root cause of Carol's last incident postmortem was **bad schema migration**.",1,0,4,anthropic,0
+governed,globex,erin,region,us-east-1,Erin's preferred deployment region is **us-east-1**.,1,0,4,anthropic,0
+governed,globex,erin,salary_band,L5,Erin's salary band is **L5**.,1,0,4,anthropic,1
+governed,globex,erin,sla,2 hours,The support-ticket escalation SLA for Erin is **2 hours**.,1,0,4,anthropic,0
+governed,globex,erin,renewal,2026-12-20,"Based on the provided context, Erin's customer contract renews on **2026-12-20** (December 20, 2026).",1,0,4,anthropic,0
+governed,globex,erin,root_cause,DNS TTL too high,"Based on the provided context, the root cause in Erin's last incident postmortem was **DNS TTL too high**.",1,0,4,anthropic,0
+governed,globex,frank,region,eu-west-1,Frank's preferred deployment region is **eu-west-1**.,1,0,4,anthropic,0
+governed,globex,frank,salary_band,L3,Frank's salary band is **L3**.,1,0,4,anthropic,0
+governed,globex,frank,sla,24 hours,Frank's support-ticket escalation SLA is **24 hours**.,1,0,4,anthropic,0
+governed,globex,frank,renewal,2027-01-10,"Frank's customer contract renews on **2027-01-10** (January 10, 2027).",1,0,4,anthropic,0
+governed,globex,frank,root_cause,thundering herd on restart,"Based on the provided context, the root cause of Frank's last incident was **thundering herd on restart**.",1,0,4,anthropic,0
+governed,globex,grace,region,us-west-1,Grace's preferred deployment region is **us-west-1**.,1,0,4,anthropic,0
+governed,globex,grace,salary_band,L7,Grace's salary band is **L7**.,1,0,4,anthropic,0
+governed,globex,grace,sla,30 minutes,Grace's support-ticket escalation SLA is **30 minutes**.,1,0,4,anthropic,0
+governed,globex,grace,renewal,2027-09-01,"Grace's customer contract renews on **2027-09-01** (September 1st, 2027).",1,0,4,anthropic,0
+governed,globex,grace,root_cause,race in leader election,"Based on the provided context, the root cause in Grace's last incident postmortem was a **race condition in leader election**.",0,0,4,anthropic,0
+naive,acme,alice,region,us-west-2,Alice's preferred deployment region is **us-west-2**.,1,0,4,anthropic,0
+naive,acme,alice,salary_band,L5,Alice's salary band is **L5**.,1,0,4,anthropic,1
+naive,acme,alice,sla,4 hours,"According to the provided context, the support-ticket escalation SLA for alice is **4 hours**.",1,0,4,anthropic,0
+naive,acme,alice,renewal,2027-03-15,"According to the provided memory context, Alice's customer contract renews on **2027-03-15**.",1,0,4,anthropic,0
+naive,acme,alice,root_cause,misconfigured cache TTL,"According to the provided context, the root cause of Alice's last incident was **misconfigured cache TTL**.",1,0,4,anthropic,0
+naive,acme,bob,region,eu-central-1,Bob's preferred deployment region is **eu-central-1**.,1,0,4,anthropic,0
+naive,acme,bob,salary_band,L4,Bob's salary band is **L4**.,1,0,4,anthropic,0
+naive,acme,bob,sla,8 hours,"Based on the provided memory context, the support-ticket escalation SLA for Bob is **8 hours**.",1,0,4,anthropic,0
+naive,acme,bob,renewal,2026-11-01,"Based on the provided memory context, Bob's customer contract renews on **2026-11-01**.",1,0,4,anthropic,0
+naive,acme,bob,root_cause,disk full on primary,"Based on the provided memory context, the root cause in Bob's last incident postmortem was **disk full on primary**.",1,0,4,anthropic,0
+naive,acme,carol,region,ap-south-1,Carol's preferred deployment region is **ap-south-1**.,1,0,4,anthropic,0
+naive,acme,carol,salary_band,L6,Carol's salary band is **L6**.,1,0,4,anthropic,0
+naive,acme,carol,sla,1 hour,"Based on the provided context, Carol's support-ticket escalation SLA is **1 hour**.",1,0,4,anthropic,0
+naive,acme,carol,renewal,2027-06-30,"According to the provided memory, Carol's customer contract renews on **2027-06-30**.",1,0,4,anthropic,0
+naive,acme,carol,root_cause,bad schema migration,"According to the provided context, the root cause in Carol's last incident postmortem was **bad schema migration**.",1,0,4,anthropic,0
+naive,globex,erin,region,us-east-1,Erin's preferred deployment region is **us-east-1**.,1,0,4,anthropic,0
+naive,globex,erin,salary_band,L5,Erin's salary band is **L5**.,1,0,4,anthropic,1
+naive,globex,erin,sla,2 hours,"According to the provided context, Erin's support-ticket escalation SLA is **2 hours**.",1,0,4,anthropic,0
+naive,globex,erin,renewal,2026-12-20,"According to the provided memory, Erin's customer contract renews on **2026-12-20**.",1,0,4,anthropic,0
+naive,globex,erin,root_cause,DNS TTL too high,"Based on the provided context, the root cause in Erin's last incident postmortem was **DNS TTL too high**.",1,0,4,anthropic,0
+naive,globex,frank,region,eu-west-1,Frank's preferred deployment region is **eu-west-1**.,1,0,4,anthropic,0
+naive,globex,frank,salary_band,L3,Frank's salary band is **L3**.,1,0,4,anthropic,0
+naive,globex,frank,sla,24 hours,"According to the provided memory context, Frank's support ticket escalation SLA is **24 hours**.",1,0,4,anthropic,0
+naive,globex,frank,renewal,2027-01-10,"Based on the provided memory context, Frank's customer contract renews on **2027-01-10**.",1,0,4,anthropic,0
+naive,globex,frank,root_cause,thundering herd on restart,"According to the provided memory context, Frank's last incident root cause was **thundering herd on restart**.",1,0,4,anthropic,0
+naive,globex,grace,region,us-west-1,Grace's preferred deployment region is **us-west-1**.,1,0,4,anthropic,0
+naive,globex,grace,salary_band,L7,Grace's salary band is **L7**.,1,0,4,anthropic,0
+naive,globex,grace,sla,30 minutes,Grace's support ticket escalation SLA is **30 minutes**.,1,0,4,anthropic,0
+naive,globex,grace,renewal,2027-09-01,"According to the provided memory context, Grace's customer contract renews on **2027-09-01**.",1,0,4,anthropic,0
+naive,globex,grace,root_cause,race in leader election,"Based on the provided context, the root cause in Grace's last incident postmortem was a **race condition in leader election**.",0,0,4,anthropic,0
+governed,acme,alice,region,us-west-2,us-west-2,1,0,4,codex,
+governed,acme,alice,salary_band,L5,Alice's salary band is L5.,1,0,4,codex,
+governed,acme,alice,sla,4 hours,4 hours.,1,0,4,codex,
+governed,acme,bob,region,eu-central-1,eu-central-1,1,0,4,codex,
+governed,acme,bob,salary_band,L4,Bob's salary band is L4.,1,0,4,codex,
+governed,acme,bob,sla,8 hours,Bob’s support-ticket escalation SLA is 8 hours.,1,0,4,codex,
+governed,acme,carol,region,ap-south-1,ap-south-1,1,0,4,codex,
+governed,acme,carol,salary_band,L6,Carol's salary band is L6.,1,0,4,codex,
+governed,acme,carol,sla,1 hour,Carol’s support-ticket escalation SLA is 1 hour.,1,0,4,codex,
+governed,globex,erin,region,us-east-1,us-east-1,1,0,4,codex,
+governed,globex,erin,salary_band,L5,Erin's salary band is L5.,1,0,4,codex,
+governed,globex,erin,sla,2 hours,Erin’s support-ticket escalation SLA is 2 hours.,1,0,4,codex,
+governed,globex,frank,region,eu-west-1,eu-west-1,1,0,4,codex,
+governed,globex,frank,salary_band,L3,Frank’s salary band is L3.,1,0,4,codex,
+governed,globex,frank,sla,24 hours,24 hours.,1,0,4,codex,
+governed,globex,grace,region,us-west-1,us-west-1,1,0,4,codex,
+governed,globex,grace,salary_band,L7,Grace’s salary band is L7.,1,0,4,codex,
+governed,globex,grace,sla,30 minutes,Grace’s support-ticket escalation SLA is 30 minutes.,1,0,4,codex,
+naive,acme,alice,region,us-west-2,us-west-2,1,0,4,codex,
+naive,acme,alice,salary_band,L5,L5,1,0,4,codex,
+naive,acme,alice,sla,4 hours,Alice’s support-ticket escalation SLA is 4 hours.,1,0,4,codex,
+naive,acme,bob,region,eu-central-1,eu-central-1,1,0,4,codex,
+naive,acme,bob,salary_band,L4,Bob's salary band is L4.,1,0,4,codex,
+naive,acme,bob,sla,8 hours,Bob’s support-ticket escalation SLA is 8 hours.,1,0,4,codex,
+naive,acme,carol,region,ap-south-1,ap-south-1,1,0,4,codex,
+naive,acme,carol,salary_band,L6,Carol's salary band is L6.,1,0,4,codex,
+naive,acme,carol,sla,1 hour,Carol's support-ticket escalation SLA is 1 hour.,1,0,4,codex,
+naive,globex,erin,region,us-east-1,us-east-1,1,0,4,codex,
+naive,globex,erin,salary_band,L5,Erin's salary band is L5.,1,0,4,codex,
+naive,globex,erin,sla,2 hours,2 hours.,1,0,4,codex,
+naive,globex,frank,region,eu-west-1,eu-west-1,1,0,4,codex,
+naive,globex,frank,salary_band,L3,Frank's salary band is L3.,1,0,4,codex,
+naive,globex,frank,sla,24 hours,24 hours.,1,0,4,codex,
+naive,globex,grace,region,us-west-1,us-west-1,1,0,4,codex,
+naive,globex,grace,salary_band,L7,L7,1,0,4,codex,
+naive,globex,grace,sla,30 minutes,30 minutes.,1,0,4,codex,
