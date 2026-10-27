@@ -1,0 +1,37 @@
+name: experiments
+on:
+  workflow_dispatch:
+    inputs:
+      seeds:
+        description: "sandbox seeds"
+        default: "1"
+  push:
+    branches: [main]
+    paths: ["govmem/**", "run_*.py", "make_*.py", ".github/workflows/experiments.yml"]
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      GOVMEM_SANDBOX: docker
+      GOVMEM_DOCKER: docker
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.13" }
+      - run: pip install -r requirements.txt
+      - name: Docker info
+        run: docker version && docker info --format '{{.CgroupVersion}} {{.Driver}}'
+      - name: LLM backend (presence only)
+        run: python -c "from govmem.llm import get_llm; print('LLM backend:', get_llm().name)"
+      - name: Original experiments
+        run: python run_experiments.py --seeds 5 && python make_charts.py
+      - name: Sandbox experiments (Docker backend)
+        run: python run_sandbox_experiments.py --backend docker --seeds ${{ github.event.inputs.seeds || '1' }} --runs-per-user 1
+      - name: Charts
+        run: python make_sandbox_charts.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: results-${{ github.run_id }}
+          path: results/
