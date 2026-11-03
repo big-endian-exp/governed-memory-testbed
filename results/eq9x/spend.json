@@ -1,0 +1,56 @@
+[
+  {
+    "tag": "anthropic",
+    "logged_calls": 3712,
+    "uncached_calls": 1085,
+    "in_tok": 326985,
+    "out_tok": 38149,
+    "usd": 0.853,
+    "basis": "list price x tokens"
+  },
+  {
+    "tag": "codex",
+    "logged_calls": 1475,
+    "uncached_calls": 321,
+    "in_tok": 4837660,
+    "out_tok": 6198,
+    "usd": 0.0,
+    "basis": "plan-billed (Codex CLI), $0 marginal"
+  },
+  {
+    "tag": "xai",
+    "logged_calls": 3427,
+    "uncached_calls": 991,
+    "in_tok": 923939,
+    "out_tok": 135646,
+    "usd": 1.5424,
+    "basis": "xAI cost_in_usd_ticks"
+  },
+  {
+    "tag": "anthropic_para",
+    "logged_calls": 1923,
+    "uncached_calls": 459,
+    "in_tok": 140807,
+    "out_tok": 16808,
+    "usd": 0.4064,
+    "basis": "list price x tokens"
+  },
+  {
+    "tag": "codex_para",
+    "logged_calls": 538,
+    "uncached_calls": 131,
+    "in_tok": 1973682,
+    "out_tok": 3157,
+    "usd": 0.0,
+    "basis": "plan-billed (Codex CLI), $0 marginal"
+  },
+  {
+    "tag": "xai_para",
+    "logged_calls": 1672,
+    "uncached_calls": 380,
+    "in_tok": 386556,
+    "out_tok": 104635,
+    "usd": 0.9296,
+    "basis": "xAI cost_in_usd_ticks"
+  }
+]

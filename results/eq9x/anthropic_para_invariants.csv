@@ -1,0 +1,13 @@
+provider,seed,backend,llm,victims,results,leaked,leak_rate,own_hits,foreign_hits,post_forget_retrievable,rows_left_with_victim_canary
+anthropic,0,governed,anthropic,acme/alice+globex/erin,600,0,0.0,90,0,0,0
+anthropic,0,naive,anthropic,acme/alice+globex/erin,600,120,0.2,90,0,0,0
+anthropic,1,governed,anthropic,acme/bob+globex/frank,600,0,0.0,90,0,0,0
+anthropic,1,naive,anthropic,acme/bob+globex/frank,600,120,0.2,90,0,0,0
+anthropic,2,governed,anthropic,acme/carol+globex/grace,600,0,0.0,90,0,0,0
+anthropic,2,naive,anthropic,acme/carol+globex/grace,600,120,0.2,90,0,0,0
+anthropic,3,governed,anthropic,acme/alice+globex/erin,600,0,0.0,90,0,0,0
+anthropic,3,naive,anthropic,acme/alice+globex/erin,600,120,0.2,90,0,0,0
+anthropic,4,governed,anthropic,acme/bob+globex/frank,600,0,0.0,90,0,0,0
+anthropic,4,naive,anthropic,acme/bob+globex/frank,600,120,0.2,90,0,0,0
+anthropic,5,governed,anthropic,acme/carol+globex/grace,600,0,0.0,90,0,0,0
+anthropic,5,naive,anthropic,acme/carol+globex/grace,600,120,0.2,90,0,0,0

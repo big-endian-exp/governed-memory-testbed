@@ -1,0 +1,22 @@
+{
+  "provider": "anthropic",
+  "seeds": 10,
+  "keys": [
+    "region",
+    "salary_band",
+    "sla",
+    "renewal",
+    "root_cause"
+  ],
+  "usd_spent": 0.4205,
+  "usd_basis": "list-price token estimate",
+  "calls": 2555,
+  "uncached": 505,
+  "in_tok": 162911,
+  "out_tok": 19041,
+  "models": [
+    "claude-haiku-4-5",
+    "claude-sonnet-4-6"
+  ],
+  "finished": "2026-10-27T13:58:40"
+}

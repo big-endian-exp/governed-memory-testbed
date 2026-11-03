@@ -1,0 +1,19 @@
+{
+  "provider": "codex",
+  "seeds": 5,
+  "keys": [
+    "region",
+    "salary_band",
+    "renewal"
+  ],
+  "usd_spent": 0.0,
+  "usd_basis": "ChatGPT plan via Codex CLI; $0 marginal, tokens logged",
+  "calls": 801,
+  "uncached": 111,
+  "in_tok": 1674249,
+  "out_tok": 2289,
+  "models": [
+    "codex-default"
+  ],
+  "finished": "2026-10-27T14:04:40"
+}

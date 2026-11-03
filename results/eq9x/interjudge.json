@@ -1,0 +1,17 @@
+{
+  "kappa": {
+    "n_row_key": 840,
+    "agree": 0.9774,
+    "kappa": 0.9429,
+    "claude_pos": 238,
+    "grok_pos": 219,
+    "disagree": 19,
+    "pre_governed": "107/120 agree; claude+=118 grok+=105",
+    "pre_naive": "57/60 agree; claude+=60 grok+=57",
+    "post_governed": "300/300 agree; claude+=0 grok+=0",
+    "post_naive": "357/360 agree; claude+=60 grok+=57",
+    "post_governed_grok_pair": "0/60 [0.00,0.06]",
+    "post_naive_grok_pair": "57/60 [0.86,0.98]"
+  },
+  "xjudge_usd": 0.287
+}

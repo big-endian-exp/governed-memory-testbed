@@ -1,0 +1,13 @@
+provider,seed,backend,llm,victims,results,leaked,leak_rate,own_hits,foreign_hits,post_forget_retrievable,rows_left_with_victim_canary
+xai,0,governed,xai,acme/alice+globex/erin,600,0,0.0,90,0,0,0
+xai,0,naive,xai,acme/alice+globex/erin,600,120,0.2,90,0,0,0
+xai,1,governed,xai,acme/bob+globex/frank,600,0,0.0,90,0,0,0
+xai,1,naive,xai,acme/bob+globex/frank,600,120,0.2,90,0,0,0
+xai,2,governed,xai,acme/carol+globex/grace,600,0,0.0,90,0,0,0
+xai,2,naive,xai,acme/carol+globex/grace,600,120,0.2,90,0,0,0
+xai,3,governed,xai,acme/alice+globex/erin,600,0,0.0,90,0,0,0
+xai,3,naive,xai,acme/alice+globex/erin,600,120,0.2,90,0,0,0
+xai,4,governed,xai,acme/bob+globex/frank,600,0,0.0,90,0,0,0
+xai,4,naive,xai,acme/bob+globex/frank,600,120,0.2,90,0,0,0
+xai,5,governed,xai,acme/carol+globex/grace,600,0,0.0,90,0,0,0
+xai,5,naive,xai,acme/carol+globex/grace,600,120,0.2,90,0,0,0

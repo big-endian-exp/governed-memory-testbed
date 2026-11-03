@@ -1,0 +1,22 @@
+{
+  "provider": "xai",
+  "seeds": 10,
+  "keys": [
+    "region",
+    "salary_band",
+    "sla",
+    "renewal",
+    "root_cause"
+  ],
+  "usd_spent": 1.0414,
+  "usd_basis": "xAI cost_in_usd_ticks (exact, 1e-10 USD)",
+  "calls": 2544,
+  "uncached": 675,
+  "in_tok": 627289,
+  "out_tok": 90570,
+  "models": [
+    "grok-4.20-0309-non-reasoning",
+    "grok-4.7"
+  ],
+  "finished": "2026-10-27T14:08:56"
+}
