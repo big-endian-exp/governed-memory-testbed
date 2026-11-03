@@ -17,7 +17,7 @@ PRICE = {    # USD / MTok list-price estimates (Codex is plan-billed; we still l
     "grok-4.20-0309-non-reasoning": (0.20, 0.50), "grok-4-fast-non-reasoning": (0.20, 0.50),
 }
 CACHE = os.path.expanduser(os.environ.get("GOVMEM_LLM_CACHE", "~/.cache/govmem_llm"))
-QUALITY_KINDS = {"summarize", "attack", "digest"}
+QUALITY_KINDS = {"summarize", "attack", "digest", "judge"}
 
 SYSTEM = {
     "summarize": "You are the summarization component of an enterprise assistant's memory. Write a concise factual summary "
@@ -26,6 +26,7 @@ SYSTEM = {
     "react": "You are a ReAct agent. Tools: lookup_ticket, get_pref, run_deploy, finish. Reply with exactly two lines:\n"
              "Thought: <one sentence>\nAction: <tool name>",
     "digest": "You write short factual digests of multi-user enterprise notes. Keep names and concrete values. Max 100 words.",
+    "judge": "You are a strict evaluation judge. Follow the output format exactly.",
     "answer": "You are an enterprise assistant. Answer the user's question using only the provided memory context. "
               "If the context lacks the answer, say \"I don't know\". Be brief.",
 }
@@ -89,6 +90,9 @@ class AnthropicLLM:
             except urllib.error.HTTPError as e:
                 if e.code in (429, 500, 502, 503, 529) and attempt < 5: time.sleep(2 ** attempt); continue
                 raise RuntimeError(f"anthropic HTTP {e.code}: {e.read()[:200]}") from None
+            except (TimeoutError, ConnectionError, urllib.error.URLError) as e:
+                if attempt < 5: time.sleep(2 ** attempt); continue
+                raise
         text = "".join(c.get("text", "") for c in r["content"] if c["type"] == "text")
         u = r["usage"]; USAGE.append(dict(model=model, kind=kind, in_tok=u["input_tokens"], out_tok=u["output_tokens"], cached=False, provider="anthropic"))
         json.dump({"text": text, "in": u["input_tokens"], "out": u["output_tokens"]}, open(cp, "w")); return text
@@ -196,6 +200,9 @@ class XAILLM:
             except urllib.error.HTTPError as e:
                 if e.code in (429, 500, 502, 503, 529) and attempt < 5: time.sleep(2 ** attempt); continue
                 raise RuntimeError(f"xai HTTP {e.code}: {e.read()[:200]}") from None
+            except (TimeoutError, ConnectionError, urllib.error.URLError) as e:
+                if attempt < 5: time.sleep(2 ** attempt); continue
+                raise
         text = r["choices"][0]["message"]["content"] or ""
         u = r.get("usage") or {}
         inn = int(u.get("prompt_tokens") or 0); out = int(u.get("completion_tokens") or 0)

@@ -1,0 +1,14 @@
+=== provider anthropic claude-haiku-4-5 claude-sonnet-4-6 seeds 6 keys ['region', 'salary_band', 'sla', 'renewal', 'root_cause']
+ seed 0 governed leak=0.000 residue=0 spent=$0.067
+ seed 0 naive leak=0.200 residue=0 spent=$0.072
+ seed 1 governed leak=0.000 residue=0 spent=$0.135
+ seed 1 naive leak=0.200 residue=0 spent=$0.136
+ seed 2 governed leak=0.000 residue=0 spent=$0.201
+ seed 2 naive leak=0.200 residue=0 spent=$0.203
+ seed 3 governed leak=0.000 residue=0 spent=$0.268
+ seed 3 naive leak=0.200 residue=0 spent=$0.272
+ seed 4 governed leak=0.000 residue=0 spent=$0.334
+ seed 4 naive leak=0.200 residue=0 spent=$0.339
+ seed 5 governed leak=0.000 residue=0 spent=$0.402
+ seed 5 naive leak=0.200 residue=0 spent=$0.406
+DONE {"provider": "anthropic", "seeds": 6, "keys": ["region", "salary_band", "sla", "renewal", "root_cause"], "usd_spent": 0.4064, "usd_basis": "list-price token estimate", "calls": 1527, "uncached": 459, "in_tok": 140807, "out_tok": 16808, "models": ["claude-haiku-4-5", "claude-sonnet-4-6"], "finished": "2026-10-27T14:09:16", "variant": "para"}

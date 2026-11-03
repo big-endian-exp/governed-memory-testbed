@@ -1,0 +1,169 @@
+provider,metric,governed,naive
+anthropic,leaked / adversarial results (all seeds),0/6000 (0.00; CI 0.00-0.00),1200/6000 (0.20; CI 0.19-0.21)
+anthropic,leak rate range across seeds,0.000-0.000,0.200-0.200
+anthropic,post-forget retrievable canary results (sum),0,80
+anthropic,rows left holding victim canary (sum),0,20
+anthropic,text/pre: derived rows (summary/digest) convey fact [power check] - LLM judge,100/100 (1.00; CI 0.96-1.00),100/100 (1.00; CI 0.96-1.00)
+anthropic,text/pre: string/format match,100/100 (1.00; CI 0.96-1.00),100/100 (1.00; CI 0.96-1.00)
+anthropic,text/pre: judge-only (missed by string match),0/100 (0.00; CI 0.00-0.04),0/100 (0.00; CI 0.00-0.04)
+anthropic,text/post: surviving rows convey fact - LLM judge,0/100 (0.00; CI 0.00-0.04),100/100 (1.00; CI 0.96-1.00)
+anthropic,text/post: string/format match,0/100 (0.00; CI 0.00-0.04),100/100 (1.00; CI 0.96-1.00)
+anthropic,text/post: judge-only (missed by string match),0/100 (0.00; CI 0.00-0.04),0/100 (0.00; CI 0.00-0.04)
+anthropic,embedding/pre: name+value recoverable from stored vectors,100/100 (1.00; CI 0.96-1.00),100/100 (1.00; CI 0.96-1.00)
+anthropic,embedding/post: name+value recoverable from stored vectors,0/100 (0.00; CI 0.00-0.04),100/100 (1.00; CI 0.96-1.00)
+anthropic,reconstruct/pre/peer: LLM answer reveals value (judge),99/100 (0.99; CI 0.95-1.00),100/100 (1.00; CI 0.96-1.00)
+anthropic,reconstruct/pre/peer: string/format match,99/100 (0.99; CI 0.95-1.00),100/100 (1.00; CI 0.96-1.00)
+anthropic,reconstruct/pre/victim_principal: LLM answer reveals value (judge),100/100 (1.00; CI 0.96-1.00),100/100 (1.00; CI 0.96-1.00)
+anthropic,reconstruct/pre/victim_principal: string/format match,97/100 (0.97; CI 0.92-0.99),100/100 (1.00; CI 0.96-1.00)
+anthropic,reconstruct/pre/raw_store: LLM answer reveals value (judge),100/100 (1.00; CI 0.96-1.00),100/100 (1.00; CI 0.96-1.00)
+anthropic,reconstruct/pre/raw_store: string/format match,100/100 (1.00; CI 0.96-1.00),100/100 (1.00; CI 0.96-1.00)
+anthropic,reconstruct/post/peer: LLM answer reveals value (judge),0/100 (0.00; CI 0.00-0.04),4/100 (0.04; CI 0.02-0.10)
+anthropic,reconstruct/post/peer: string/format match,0/100 (0.00; CI 0.00-0.04),5/100 (0.05; CI 0.02-0.11)
+anthropic,reconstruct/post/victim_principal: LLM answer reveals value (judge),0/100 (0.00; CI 0.00-0.04),4/100 (0.04; CI 0.02-0.10)
+anthropic,reconstruct/post/victim_principal: string/format match,0/100 (0.00; CI 0.00-0.04),5/100 (0.05; CI 0.02-0.11)
+anthropic,reconstruct/post/raw_store: LLM answer reveals value (judge),0/100 (0.00; CI 0.00-0.04),4/100 (0.04; CI 0.02-0.10)
+anthropic,reconstruct/post/raw_store: string/format match,0/100 (0.00; CI 0.00-0.04),5/100 (0.05; CI 0.02-0.11)
+anthropic,reconstruct/post/no_context: LLM answer reveals value (judge),0/100 (0.00; CI 0.00-0.04),n/a
+anthropic,reconstruct/post/no_context: string/format match,0/100 (0.00; CI 0.00-0.04),n/a
+codex,leaked / adversarial results (all seeds),0/3000 (0.00; CI 0.00-0.00),600/3000 (0.20; CI 0.19-0.21)
+codex,leak rate range across seeds,0.000-0.000,0.200-0.200
+codex,post-forget retrievable canary results (sum),0,40
+codex,rows left holding victim canary (sum),0,10
+codex,text/pre: derived rows (summary/digest) convey fact [power check] - LLM judge,30/30 (1.00; CI 0.89-1.00),30/30 (1.00; CI 0.89-1.00)
+codex,text/pre: string/format match,30/30 (1.00; CI 0.89-1.00),30/30 (1.00; CI 0.89-1.00)
+codex,text/pre: judge-only (missed by string match),0/30 (0.00; CI 0.00-0.11),0/30 (0.00; CI 0.00-0.11)
+codex,text/post: surviving rows convey fact - LLM judge,0/30 (0.00; CI 0.00-0.11),30/30 (1.00; CI 0.89-1.00)
+codex,text/post: string/format match,0/30 (0.00; CI 0.00-0.11),30/30 (1.00; CI 0.89-1.00)
+codex,text/post: judge-only (missed by string match),0/30 (0.00; CI 0.00-0.11),0/30 (0.00; CI 0.00-0.11)
+codex,embedding/pre: name+value recoverable from stored vectors,30/30 (1.00; CI 0.89-1.00),30/30 (1.00; CI 0.89-1.00)
+codex,embedding/post: name+value recoverable from stored vectors,0/30 (0.00; CI 0.00-0.11),30/30 (1.00; CI 0.89-1.00)
+codex,reconstruct/pre/peer: LLM answer reveals value (judge),24/30 (0.80; CI 0.63-0.90),30/30 (1.00; CI 0.89-1.00)
+codex,reconstruct/pre/peer: string/format match,24/30 (0.80; CI 0.63-0.90),30/30 (1.00; CI 0.89-1.00)
+codex,reconstruct/pre/victim_principal: LLM answer reveals value (judge),30/30 (1.00; CI 0.89-1.00),30/30 (1.00; CI 0.89-1.00)
+codex,reconstruct/pre/victim_principal: string/format match,30/30 (1.00; CI 0.89-1.00),30/30 (1.00; CI 0.89-1.00)
+codex,reconstruct/pre/raw_store: LLM answer reveals value (judge),30/30 (1.00; CI 0.89-1.00),30/30 (1.00; CI 0.89-1.00)
+codex,reconstruct/pre/raw_store: string/format match,30/30 (1.00; CI 0.89-1.00),30/30 (1.00; CI 0.89-1.00)
+codex,reconstruct/post/peer: LLM answer reveals value (judge),0/30 (0.00; CI 0.00-0.11),10/30 (0.33; CI 0.19-0.51)
+codex,reconstruct/post/peer: string/format match,0/30 (0.00; CI 0.00-0.11),10/30 (0.33; CI 0.19-0.51)
+codex,reconstruct/post/victim_principal: LLM answer reveals value (judge),0/30 (0.00; CI 0.00-0.11),10/30 (0.33; CI 0.19-0.51)
+codex,reconstruct/post/victim_principal: string/format match,0/30 (0.00; CI 0.00-0.11),10/30 (0.33; CI 0.19-0.51)
+codex,reconstruct/post/raw_store: LLM answer reveals value (judge),0/30 (0.00; CI 0.00-0.11),10/30 (0.33; CI 0.19-0.51)
+codex,reconstruct/post/raw_store: string/format match,0/30 (0.00; CI 0.00-0.11),10/30 (0.33; CI 0.19-0.51)
+codex,reconstruct/post/no_context: LLM answer reveals value (judge),0/30 (0.00; CI 0.00-0.11),n/a
+codex,reconstruct/post/no_context: string/format match,0/30 (0.00; CI 0.00-0.11),n/a
+xai,leaked / adversarial results (all seeds),0/6000 (0.00; CI 0.00-0.00),1200/6000 (0.20; CI 0.19-0.21)
+xai,leak rate range across seeds,0.000-0.000,0.200-0.200
+xai,post-forget retrievable canary results (sum),0,76
+xai,rows left holding victim canary (sum),0,19
+xai,text/pre: derived rows (summary/digest) convey fact [power check] - LLM judge,100/100 (1.00; CI 0.96-1.00),100/100 (1.00; CI 0.96-1.00)
+xai,text/pre: string/format match,100/100 (1.00; CI 0.96-1.00),100/100 (1.00; CI 0.96-1.00)
+xai,text/pre: judge-only (missed by string match),0/100 (0.00; CI 0.00-0.04),0/100 (0.00; CI 0.00-0.04)
+xai,text/post: surviving rows convey fact - LLM judge,0/100 (0.00; CI 0.00-0.04),100/100 (1.00; CI 0.96-1.00)
+xai,text/post: string/format match,0/100 (0.00; CI 0.00-0.04),100/100 (1.00; CI 0.96-1.00)
+xai,text/post: judge-only (missed by string match),0/100 (0.00; CI 0.00-0.04),0/100 (0.00; CI 0.00-0.04)
+xai,embedding/pre: name+value recoverable from stored vectors,100/100 (1.00; CI 0.96-1.00),100/100 (1.00; CI 0.96-1.00)
+xai,embedding/post: name+value recoverable from stored vectors,0/100 (0.00; CI 0.00-0.04),100/100 (1.00; CI 0.96-1.00)
+xai,reconstruct/pre/peer: LLM answer reveals value (judge),76/100 (0.76; CI 0.67-0.83),100/100 (1.00; CI 0.96-1.00)
+xai,reconstruct/pre/peer: string/format match,77/100 (0.77; CI 0.68-0.84),100/100 (1.00; CI 0.96-1.00)
+xai,reconstruct/pre/victim_principal: LLM answer reveals value (judge),100/100 (1.00; CI 0.96-1.00),100/100 (1.00; CI 0.96-1.00)
+xai,reconstruct/pre/victim_principal: string/format match,100/100 (1.00; CI 0.96-1.00),100/100 (1.00; CI 0.96-1.00)
+xai,reconstruct/pre/raw_store: LLM answer reveals value (judge),100/100 (1.00; CI 0.96-1.00),100/100 (1.00; CI 0.96-1.00)
+xai,reconstruct/pre/raw_store: string/format match,100/100 (1.00; CI 0.96-1.00),100/100 (1.00; CI 0.96-1.00)
+xai,reconstruct/post/peer: LLM answer reveals value (judge),0/100 (0.00; CI 0.00-0.04),2/100 (0.02; CI 0.01-0.07)
+xai,reconstruct/post/peer: string/format match,0/100 (0.00; CI 0.00-0.04),2/100 (0.02; CI 0.01-0.07)
+xai,reconstruct/post/victim_principal: LLM answer reveals value (judge),0/100 (0.00; CI 0.00-0.04),2/100 (0.02; CI 0.01-0.07)
+xai,reconstruct/post/victim_principal: string/format match,0/100 (0.00; CI 0.00-0.04),2/100 (0.02; CI 0.01-0.07)
+xai,reconstruct/post/raw_store: LLM answer reveals value (judge),0/100 (0.00; CI 0.00-0.04),2/100 (0.02; CI 0.01-0.07)
+xai,reconstruct/post/raw_store: string/format match,0/100 (0.00; CI 0.00-0.04),2/100 (0.02; CI 0.01-0.07)
+xai,reconstruct/post/no_context: LLM answer reveals value (judge),0/100 (0.00; CI 0.00-0.04),n/a
+xai,reconstruct/post/no_context: string/format match,0/100 (0.00; CI 0.00-0.04),n/a
+anthropic_para,leaked / adversarial results (all seeds),0/3600 (0.00; CI 0.00-0.00),720/3600 (0.20; CI 0.19-0.21)
+anthropic_para,leak rate range across seeds,0.000-0.000,0.200-0.200
+anthropic_para,post-forget retrievable canary results (sum),0,0
+anthropic_para,rows left holding victim canary (sum),0,0
+anthropic_para,text/pre: derived rows (summary/digest) convey fact [power check] - LLM judge,60/60 (1.00; CI 0.94-1.00),60/60 (1.00; CI 0.94-1.00)
+anthropic_para,text/pre: string/format match,3/60 (0.05; CI 0.02-0.14),3/60 (0.05; CI 0.02-0.14)
+anthropic_para,text/pre: judge-only (missed by string match),57/60 (0.95; CI 0.86-0.98),57/60 (0.95; CI 0.86-0.98)
+anthropic_para,text/post: surviving rows convey fact - LLM judge,0/60 (0.00; CI 0.00-0.06),60/60 (1.00; CI 0.94-1.00)
+anthropic_para,text/post: string/format match,0/60 (0.00; CI 0.00-0.06),3/60 (0.05; CI 0.02-0.14)
+anthropic_para,text/post: judge-only (missed by string match),0/60 (0.00; CI 0.00-0.06),57/60 (0.95; CI 0.86-0.98)
+anthropic_para,embedding/pre: name+value recoverable from stored vectors,60/60 (1.00; CI 0.94-1.00),60/60 (1.00; CI 0.94-1.00)
+anthropic_para,embedding/post: name+value recoverable from stored vectors,1/60 (0.02; CI 0.00-0.09),60/60 (1.00; CI 0.94-1.00)
+anthropic_para,reconstruct/pre/peer: LLM answer reveals value (judge),44/60 (0.73; CI 0.61-0.83),60/60 (1.00; CI 0.94-1.00)
+anthropic_para,reconstruct/pre/peer: string/format match,19/60 (0.32; CI 0.21-0.44),60/60 (1.00; CI 0.94-1.00)
+anthropic_para,reconstruct/pre/victim_principal: LLM answer reveals value (judge),60/60 (1.00; CI 0.94-1.00),60/60 (1.00; CI 0.94-1.00)
+anthropic_para,reconstruct/pre/victim_principal: string/format match,58/60 (0.97; CI 0.89-0.99),60/60 (1.00; CI 0.94-1.00)
+anthropic_para,reconstruct/pre/raw_store: LLM answer reveals value (judge),60/60 (1.00; CI 0.94-1.00),60/60 (1.00; CI 0.94-1.00)
+anthropic_para,reconstruct/pre/raw_store: string/format match,60/60 (1.00; CI 0.94-1.00),60/60 (1.00; CI 0.94-1.00)
+anthropic_para,reconstruct/post/peer: LLM answer reveals value (judge),0/60 (0.00; CI 0.00-0.06),0/60 (0.00; CI 0.00-0.06)
+anthropic_para,reconstruct/post/peer: string/format match,0/60 (0.00; CI 0.00-0.06),0/60 (0.00; CI 0.00-0.06)
+anthropic_para,reconstruct/post/victim_principal: LLM answer reveals value (judge),0/60 (0.00; CI 0.00-0.06),0/60 (0.00; CI 0.00-0.06)
+anthropic_para,reconstruct/post/victim_principal: string/format match,0/60 (0.00; CI 0.00-0.06),0/60 (0.00; CI 0.00-0.06)
+anthropic_para,reconstruct/post/raw_store: LLM answer reveals value (judge),0/60 (0.00; CI 0.00-0.06),0/60 (0.00; CI 0.00-0.06)
+anthropic_para,reconstruct/post/raw_store: string/format match,0/60 (0.00; CI 0.00-0.06),0/60 (0.00; CI 0.00-0.06)
+anthropic_para,reconstruct/post/no_context: LLM answer reveals value (judge),0/60 (0.00; CI 0.00-0.06),n/a
+anthropic_para,reconstruct/post/no_context: string/format match,0/60 (0.00; CI 0.00-0.06),n/a
+codex_para,leaked / adversarial results (all seeds),0/1800 (0.00; CI 0.00-0.00),360/1800 (0.20; CI 0.18-0.22)
+codex_para,leak rate range across seeds,0.000-0.000,0.200-0.200
+codex_para,post-forget retrievable canary results (sum),0,0
+codex_para,rows left holding victim canary (sum),0,0
+codex_para,text/pre: derived rows (summary/digest) convey fact [power check] - LLM judge,18/18 (1.00; CI 0.82-1.00),18/18 (1.00; CI 0.82-1.00)
+codex_para,text/pre: string/format match,0/18 (0.00; CI 0.00-0.18),0/18 (0.00; CI 0.00-0.18)
+codex_para,text/pre: judge-only (missed by string match),18/18 (1.00; CI 0.82-1.00),18/18 (1.00; CI 0.82-1.00)
+codex_para,text/post: surviving rows convey fact - LLM judge,0/18 (0.00; CI 0.00-0.18),18/18 (1.00; CI 0.82-1.00)
+codex_para,text/post: string/format match,0/18 (0.00; CI 0.00-0.18),0/18 (0.00; CI 0.00-0.18)
+codex_para,text/post: judge-only (missed by string match),0/18 (0.00; CI 0.00-0.18),18/18 (1.00; CI 0.82-1.00)
+codex_para,embedding/pre: name+value recoverable from stored vectors,18/18 (1.00; CI 0.82-1.00),18/18 (1.00; CI 0.82-1.00)
+codex_para,embedding/post: name+value recoverable from stored vectors,0/18 (0.00; CI 0.00-0.18),18/18 (1.00; CI 0.82-1.00)
+codex_para,reconstruct/pre/peer: LLM answer reveals value (judge),15/18 (0.83; CI 0.61-0.94),18/18 (1.00; CI 0.82-1.00)
+codex_para,reconstruct/pre/peer: string/format match,12/18 (0.67; CI 0.44-0.84),18/18 (1.00; CI 0.82-1.00)
+codex_para,reconstruct/pre/victim_principal: LLM answer reveals value (judge),18/18 (1.00; CI 0.82-1.00),18/18 (1.00; CI 0.82-1.00)
+codex_para,reconstruct/pre/victim_principal: string/format match,18/18 (1.00; CI 0.82-1.00),18/18 (1.00; CI 0.82-1.00)
+codex_para,reconstruct/pre/raw_store: LLM answer reveals value (judge),18/18 (1.00; CI 0.82-1.00),18/18 (1.00; CI 0.82-1.00)
+codex_para,reconstruct/pre/raw_store: string/format match,18/18 (1.00; CI 0.82-1.00),18/18 (1.00; CI 0.82-1.00)
+codex_para,reconstruct/post/peer: LLM answer reveals value (judge),0/18 (0.00; CI 0.00-0.18),0/18 (0.00; CI 0.00-0.18)
+codex_para,reconstruct/post/peer: string/format match,0/18 (0.00; CI 0.00-0.18),0/18 (0.00; CI 0.00-0.18)
+codex_para,reconstruct/post/victim_principal: LLM answer reveals value (judge),0/18 (0.00; CI 0.00-0.18),0/18 (0.00; CI 0.00-0.18)
+codex_para,reconstruct/post/victim_principal: string/format match,0/18 (0.00; CI 0.00-0.18),0/18 (0.00; CI 0.00-0.18)
+codex_para,reconstruct/post/raw_store: LLM answer reveals value (judge),0/18 (0.00; CI 0.00-0.18),0/18 (0.00; CI 0.00-0.18)
+codex_para,reconstruct/post/raw_store: string/format match,0/18 (0.00; CI 0.00-0.18),0/18 (0.00; CI 0.00-0.18)
+codex_para,reconstruct/post/no_context: LLM answer reveals value (judge),0/18 (0.00; CI 0.00-0.18),n/a
+codex_para,reconstruct/post/no_context: string/format match,0/18 (0.00; CI 0.00-0.18),n/a
+xai_para,leaked / adversarial results (all seeds),0/3600 (0.00; CI 0.00-0.00),720/3600 (0.20; CI 0.19-0.21)
+xai_para,leak rate range across seeds,0.000-0.000,0.200-0.200
+xai_para,post-forget retrievable canary results (sum),0,0
+xai_para,rows left holding victim canary (sum),0,0
+xai_para,text/pre: derived rows (summary/digest) convey fact [power check] - LLM judge,60/60 (1.00; CI 0.94-1.00),60/60 (1.00; CI 0.94-1.00)
+xai_para,text/pre: string/format match,2/60 (0.03; CI 0.01-0.11),2/60 (0.03; CI 0.01-0.11)
+xai_para,text/pre: judge-only (missed by string match),58/60 (0.97; CI 0.89-0.99),58/60 (0.97; CI 0.89-0.99)
+xai_para,text/post: surviving rows convey fact - LLM judge,0/60 (0.00; CI 0.00-0.06),60/60 (1.00; CI 0.94-1.00)
+xai_para,text/post: string/format match,0/60 (0.00; CI 0.00-0.06),2/60 (0.03; CI 0.01-0.11)
+xai_para,text/post: judge-only (missed by string match),0/60 (0.00; CI 0.00-0.06),58/60 (0.97; CI 0.89-0.99)
+xai_para,embedding/pre: name+value recoverable from stored vectors,60/60 (1.00; CI 0.94-1.00),60/60 (1.00; CI 0.94-1.00)
+xai_para,embedding/post: name+value recoverable from stored vectors,0/60 (0.00; CI 0.00-0.06),60/60 (1.00; CI 0.94-1.00)
+xai_para,reconstruct/pre/peer: LLM answer reveals value (judge),33/60 (0.55; CI 0.42-0.67),60/60 (1.00; CI 0.94-1.00)
+xai_para,reconstruct/pre/peer: string/format match,30/60 (0.50; CI 0.38-0.62),60/60 (1.00; CI 0.94-1.00)
+xai_para,reconstruct/pre/victim_principal: LLM answer reveals value (judge),60/60 (1.00; CI 0.94-1.00),60/60 (1.00; CI 0.94-1.00)
+xai_para,reconstruct/pre/victim_principal: string/format match,60/60 (1.00; CI 0.94-1.00),60/60 (1.00; CI 0.94-1.00)
+xai_para,reconstruct/pre/raw_store: LLM answer reveals value (judge),60/60 (1.00; CI 0.94-1.00),60/60 (1.00; CI 0.94-1.00)
+xai_para,reconstruct/pre/raw_store: string/format match,60/60 (1.00; CI 0.94-1.00),60/60 (1.00; CI 0.94-1.00)
+xai_para,reconstruct/post/peer: LLM answer reveals value (judge),0/60 (0.00; CI 0.00-0.06),0/60 (0.00; CI 0.00-0.06)
+xai_para,reconstruct/post/peer: string/format match,0/60 (0.00; CI 0.00-0.06),0/60 (0.00; CI 0.00-0.06)
+xai_para,reconstruct/post/victim_principal: LLM answer reveals value (judge),0/60 (0.00; CI 0.00-0.06),0/60 (0.00; CI 0.00-0.06)
+xai_para,reconstruct/post/victim_principal: string/format match,0/60 (0.00; CI 0.00-0.06),0/60 (0.00; CI 0.00-0.06)
+xai_para,reconstruct/post/raw_store: LLM answer reveals value (judge),0/60 (0.00; CI 0.00-0.06),0/60 (0.00; CI 0.00-0.06)
+xai_para,reconstruct/post/raw_store: string/format match,0/60 (0.00; CI 0.00-0.06),0/60 (0.00; CI 0.00-0.06)
+xai_para,reconstruct/post/no_context: LLM answer reveals value (judge),0/60 (0.00; CI 0.00-0.06),n/a
+xai_para,reconstruct/post/no_context: string/format match,0/60 (0.00; CI 0.00-0.06),n/a
+anthropic_para_xj,leaked / adversarial results (all seeds),0/3600 (0.00; CI 0.00-0.00),720/3600 (0.20; CI 0.19-0.21)
+anthropic_para_xj,leak rate range across seeds,0.000-0.000,0.200-0.200
+anthropic_para_xj,post-forget retrievable canary results (sum),0,0
+anthropic_para_xj,rows left holding victim canary (sum),0,0
+anthropic_para_xj,text/pre: derived rows (summary/digest) convey fact [power check] - LLM judge,60/60 (1.00; CI 0.94-1.00),60/60 (1.00; CI 0.94-1.00)
+anthropic_para_xj,text/pre: string/format match,3/60 (0.05; CI 0.02-0.14),3/60 (0.05; CI 0.02-0.14)
+anthropic_para_xj,text/pre: judge-only (missed by string match),57/60 (0.95; CI 0.86-0.98),57/60 (0.95; CI 0.86-0.98)
+anthropic_para_xj,text/post: surviving rows convey fact - LLM judge,0/60 (0.00; CI 0.00-0.06),60/60 (1.00; CI 0.94-1.00)
+anthropic_para_xj,text/post: string/format match,0/60 (0.00; CI 0.00-0.06),3/60 (0.05; CI 0.02-0.14)
+anthropic_para_xj,text/post: judge-only (missed by string match),0/60 (0.00; CI 0.00-0.06),57/60 (0.95; CI 0.86-0.98)
+anthropic_para_xj,embedding/pre: name+value recoverable from stored vectors,60/60 (1.00; CI 0.94-1.00),60/60 (1.00; CI 0.94-1.00)
+anthropic_para_xj,embedding/post: name+value recoverable from stored vectors,1/60 (0.02; CI 0.00-0.09),60/60 (1.00; CI 0.94-1.00)

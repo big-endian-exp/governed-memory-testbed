@@ -1,0 +1,7 @@
+file,backend,n,verbatim,semantic,summary_row_left
+real_semantic_residue_anthropic.csv,governed,10,0,0,0
+real_semantic_residue_anthropic.csv,naive,10,10,10,10
+real_semantic_residue_codex.csv,governed,6,0,0,0
+real_semantic_residue_codex.csv,naive,6,6,6,6
+real_semantic_residue_xai.csv,governed,10,0,0,0
+real_semantic_residue_xai.csv,naive,10,10,10,10
